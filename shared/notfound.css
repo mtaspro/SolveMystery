@@ -1,0 +1,43 @@
+/* shared/notfound.css — the 404 / wrong-door page.
+   Builds on the tokens in /shared/style.css. Mobile-first, touch-only. */
+
+/* ---- Safe centring: centres when it fits, 0 when it would overflow ---- */
+.nf { justify-content:flex-start; }
+.nf__inner {
+  width:100%; max-width:520px; margin:auto 0;
+  display:flex; flex-direction:column; align-items:center; gap:14px;
+}
+
+/* ---- Big 404 headline ---- */
+.nf__code {
+  margin:0; text-align:center;
+  font-size:clamp(2.1rem,11vw,3.6rem); font-weight:800;
+  line-height:1.1; letter-spacing:.03em; color:var(--cream);
+  animation:nfPulse 4s ease-in-out infinite;
+}
+@keyframes nfPulse {
+  0%,100% { text-shadow:0 0 24px rgba(255,90,90,.3); }
+  50% { text-shadow:0 0 42px rgba(255,90,90,.6); }
+}
+.nf__rule { width:64px; height:2px; margin:0; border-radius:2px; background:var(--neon); }
+
+.nf__from {
+  margin:0; font-size:.74rem; letter-spacing:.32em;
+  text-transform:uppercase; color:var(--neon);
+}
+.nf__taunt {
+  margin:0; max-width:34ch; text-align:center;
+  font-size:clamp(1rem,4.2vw,1.2rem); line-height:1.5; color:var(--cream);
+}
+.nf__taunt::before { content:"\201C"; }
+.nf__taunt::after { content:"\201D"; }
+
+.nf__note {
+  margin:6px 0 0; max-width:32ch;
+  font-size:.8rem; line-height:1.5; color:var(--cream-dim);
+}
+
+/* ---- Reduced motion: keep the glow static ---- */
+@media (prefers-reduced-motion: reduce) {
+  .nf__code { animation:none; text-shadow:0 0 24px rgba(255,90,90,.3); }
+}

@@ -1,16 +1,18 @@
-// s1-corridor/script.js — Stage 1: the corridor.
-// Scene: lightsOn -> lightsOff. The FIRST power cut is caused by reading the
+// corridor/script.js — the corridor.
+// An "internet mystery" page: the clue here is solved off-site and the player
+// types the next address into their own browser address bar. So there is no
+// answer checking, no code entry, no saved progress and no "next" button.
+// Scene: lightsOn -> lightsOff. The FIRST power cut comes from reading the
 // sticky note; after that the wall switch toggles light/dark and the torch
-// follows the pointer. Puzzle: a 4-digit keypad checked by the shared engine,
-// timed hints, then the success screen + fragment award.
-// Motion is skipped for users who prefer reduced motion. Everything is
-// taps/clicks (never hover).
+// follows the pointer. Hints unlock at 45s / 90s / 150s, and after hint 3 a
+// "Reveal digits" button lights all four chalk marks for good.
+// Motion is skipped for users who prefer reduced motion. Taps/clicks only.
 
 import { CONFIG } from '/config.js';
-import { checkAnswer, collectFragment, loadProgress, renderFragmentTray } from '/shared/engine.js';
 
-const STAGE = 's1'; // this page's stage id (matches the folder name)
-
+const STAGE = 's1';                // this page's stage id in CONFIG
+const HINTS = CONFIG.stages[STAGE].hints;
+const HINT_TIMES = [45, 90, 150];  // seconds after page load
 const INTRO_TEXT = "Candidates, your results have been relocated. Remain calm. Panic is permitted.";
 
 // Read the user's motion preference at call time so it stays live.
@@ -24,6 +26,13 @@ const beginBtn = document.getElementById('beginBtn');
 const sticky = document.getElementById('stickyNote');
 const switchBtn = document.getElementById('lightSwitch');
 const status = document.getElementById('status');
+const hintBtn = document.getElementById('hintBtn');
+const hintCount = document.getElementById('hintCount');
+const hintSheet = document.getElementById('hintSheet');
+const hintClose = document.getElementById('hintClose');
+const hintList = document.getElementById('hintList');
+const revealWrap = document.getElementById('revealWrap');
+const revealBtn = document.getElementById('revealBtn');
 
 // --- state machine ---
 const Lights = { ON: 'lightsOn', OFF: 'lightsOff' };
@@ -152,7 +161,7 @@ scene.addEventListener('pointerdown', (e) => {
   if (lights !== Lights.OFF) return;   // the torch only exists in the dark
   dragging = true;
   queueTorch(e.clientX, e.clientY);
-  fadeHint();
+  fadeTorchHint();
 });
 scene.addEventListener('pointermove', (e) => {
   if (!dragging || lights !== Lights.OFF) return;
@@ -165,154 +174,18 @@ window.addEventListener('orientationchange', measure);
 if (window.visualViewport) window.visualViewport.addEventListener('resize', measure);
 
 // Fade the "look around" prompt after the first drag.
-let hintGone = false;
-function fadeHint() {
-  if (hintGone) return;
-  hintGone = true;
+let torchHintGone = false;
+function fadeTorchHint() {
+  if (torchHintGone) return;
+  torchHintGone = true;
   scene.classList.add('has-dragged');
 }
 
-// --- keypad, hints and success ------------------------------------------
-const stage = CONFIG.stages[STAGE];
-const HINT_TIMES = [45, 90, 150];   // seconds after page load
+// --- hints: unlock at 45 / 90 / 150s, countdown on the locked button -----
 const loadedAt = Date.now();
-
-const codeBtn = document.getElementById('codeBtn');
-const hintBtn = document.getElementById('hintBtn');
-const hintCount = document.getElementById('hintCount');
-const keypadSheet = document.getElementById('keypadSheet');
-const keypadClose = document.getElementById('keypadClose');
-const codeDisplay = document.getElementById('codeDisplay');
-const keypadMsg = document.getElementById('keypadMsg');
-const pad = document.getElementById('pad');
-const hintSheet = document.getElementById('hintSheet');
-const hintClose = document.getElementById('hintClose');
-const hintList = document.getElementById('hintList');
-const revealWrap = document.getElementById('revealWrap');
-const revealBtn = document.getElementById('revealBtn');
-const success = document.getElementById('success');
-const successMsg = document.getElementById('successMsg');
-const successLetter = document.getElementById('successLetter');
-const nextBtn = document.getElementById('nextBtn');
-const flash = document.getElementById('flash');
-
-let code = '';        // the digits typed so far
 let hintsOpen = 0;    // how many hints have unlocked
 let hintTimer = 0;
 
-// Already solved? (this stage's fragment is already sitting in localStorage)
-function alreadySolved() {
-  return loadProgress().fragments.some(
-    (f) => f.pos === stage.fragment.pos && f.letter === stage.fragment.letter
-  );
-}
-
-// ----- bottom sheets -----
-function openSheet(sheet) {
-  sheet.hidden = false;
-  requestAnimationFrame(() => sheet.classList.add('is-open'));
-}
-function closeSheet(sheet) {
-  if (sheet.hidden) return;
-  sheet.classList.remove('is-open');
-  const hide = () => { sheet.hidden = true; };
-  if (prefersReducedMotion.matches) hide();
-  else setTimeout(hide, 260);
-}
-[keypadSheet, hintSheet].forEach((sheet) => {
-  sheet.addEventListener('click', (e) => { if (e.target === sheet) closeSheet(sheet); }); // tap scrim
-});
-keypadClose.addEventListener('click', () => closeSheet(keypadSheet));
-hintClose.addEventListener('click', () => closeSheet(hintSheet));
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') { closeSheet(keypadSheet); closeSheet(hintSheet); }
-});
-
-// ----- 4-digit display: plain divs, so no native keyboard ever appears -----
-function renderCode() {
-  codeDisplay.innerHTML = '';
-  for (let i = 0; i < 4; i++) {
-    const slot = document.createElement('span');
-    slot.className = 'code__slot' + (code[i] ? ' is-set' : '');
-    slot.textContent = code[i] || '';
-    codeDisplay.appendChild(slot);
-  }
-  codeDisplay.setAttribute('aria-label', 'Code, ' + code.length + ' of 4 digits');
-  say('Code: ' + (code || 'empty'));
-}
-function pushDigit(d) {
-  if (code.length >= 4) return;
-  code += d;
-  keypadMsg.textContent = '';
-  renderCode();
-}
-function backspace() {
-  if (!code.length) return;
-  code = code.slice(0, -1);
-  renderCode();
-}
-
-// ----- keypad keys: 1-9, backspace, 0, enter -----
-function key(label, ariaLabel, onTap, extra) {
-  const b = document.createElement('button');
-  b.type = 'button';
-  b.className = 'pad__key' + (extra ? ' ' + extra : '');
-  b.textContent = label;
-  b.setAttribute('aria-label', ariaLabel);
-  b.addEventListener('click', onTap);
-  return b;
-}
-['1','2','3','4','5','6','7','8','9'].forEach((d) => pad.appendChild(key(d, d, () => pushDigit(d))));
-pad.appendChild(key('⌫', 'Delete last digit', backspace));
-pad.appendChild(key('0', '0', () => pushDigit('0')));
-pad.appendChild(key('Enter', 'Check code', submitCode, 'pad__key--go'));
-
-// ----- submit -----
-function submitCode() {
-  if (code.length < 4) { deny('Four digits, please.'); return; }
-  if (checkAnswer(STAGE, code)) win();
-  else deny('Access denied.');
-}
-function deny(msg) {
-  keypadMsg.textContent = msg;
-  codeDisplay.classList.remove('is-shaking');
-  void codeDisplay.offsetWidth;                 // restart the shake animation
-  codeDisplay.classList.add('is-shaking');
-  buzz([70, 50, 70]);                           // guarded: not every browser has it
-  code = '';
-  renderCode();
-  say(msg);
-}
-function buzz(pattern) {
-  try { if (typeof navigator.vibrate === 'function') navigator.vibrate(pattern); } catch (err) { /* unsupported */ }
-}
-
-// ----- success: flash, save progress, tray animation, next stage -----
-function win() {
-  closeSheet(keypadSheet);
-  clearInterval(hintTimer);
-  flash.classList.add('is-on');
-  setTimeout(() => flash.classList.remove('is-on'), 650);
-  collectFragment(STAGE);                       // saves "A" to localStorage
-  setTimeout(showSuccess, prefersReducedMotion.matches ? 0 : 420);
-}
-function showSuccess() {
-  successMsg.textContent = 'Hm. Impressive. One department down.';
-  successLetter.textContent = stage.fragment.letter;
-  nextBtn.setAttribute('href', stage.next);    // -> /s2-k7q/
-  const tray = renderFragmentTray();           // 5 slots; the letter lands in slot 3
-  if (tray) {
-    tray.classList.remove('just-earned');
-    void tray.offsetWidth;
-    tray.classList.add('just-earned');         // CSS drop-in on slot 3
-  }
-  success.hidden = false;
-  requestAnimationFrame(() => success.classList.add('is-open'));
-  nextBtn.focus({ preventScroll: true });
-  say('Code accepted. Fragment ' + stage.fragment.letter + ' filed to slot 3.');
-}
-
-// ----- hints: unlock at 45s / 90s / 150s, countdown on the locked button -----
 function fmt(sec) {
   return Math.floor(sec / 60) + ':' + String(sec % 60).padStart(2, '0');
 }
@@ -329,41 +202,47 @@ function tickHints() {
     hintCount.classList.remove('is-ready');
   }
 }
+
 hintBtn.addEventListener('click', openHints);
 function openHints() {
   const elapsed = (Date.now() - loadedAt) / 1000;
   hintList.innerHTML = '';
-  stage.hints.forEach((h, i) => {
+  HINTS.forEach((text, i) => {
     const li = document.createElement('li');
     const unlocked = i < hintsOpen;
     li.className = unlocked ? 'hints__item' : 'hints__locked';
-    li.textContent = unlocked ? h
+    li.textContent = unlocked ? text
       : 'Locked — ' + Math.ceil(HINT_TIMES[i] - elapsed) + 's';
     hintList.appendChild(li);
   });
-  revealWrap.hidden = hintsOpen < stage.hints.length;   // only once hint 3 is out
+  revealWrap.hidden = hintsOpen < HINTS.length;   // only once hint 3 is out
   openSheet(hintSheet);
 }
+
 revealBtn.addEventListener('click', () => {
   scene.classList.add('revealed');            // all four digits stay lit for good
   closeSheet(hintSheet);
   say('The digits are revealed.');
 });
-codeBtn.addEventListener('click', () => {
-  keypadMsg.textContent = '';
-  openSheet(keypadSheet);
-});
+
+// --- bottom sheet (hints only) -----
+function openSheet(sheet) {
+  sheet.hidden = false;
+  requestAnimationFrame(() => sheet.classList.add('is-open'));
+}
+function closeSheet(sheet) {
+  if (sheet.hidden) return;
+  sheet.classList.remove('is-open');
+  const hide = () => { sheet.hidden = true; };
+  if (prefersReducedMotion.matches) hide();
+  else setTimeout(hide, 260);
+}
+hintSheet.addEventListener('click', (e) => { if (e.target === hintSheet) closeSheet(hintSheet); });
+hintClose.addEventListener('click', () => closeSheet(hintSheet));
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeSheet(hintSheet); });
 
 // --- go ---
 paint();
-renderCode();
 tickHints();
 hintTimer = setInterval(tickHints, 1000);
-
-// Saved progress already holds this stage's fragment -> skip straight to success.
-if (alreadySolved()) {
-  intro.hidden = true;
-  showSuccess();
-} else {
-  startIntro();
-}
+startIntro();

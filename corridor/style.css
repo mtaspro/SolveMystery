@@ -1,4 +1,4 @@
-/* s1-corridor/style.css — Stage 1: the corridor.
+/* corridor/style.css — the corridor.
    CSS shapes + inline SVG only (no external images).
    Touch-first, no hover-dependent behaviour, honours prefers-reduced-motion. */
 
@@ -214,17 +214,17 @@
 /* ===== Action bar (over the floor; works in light and dark) ===== */
 .actbar {
   position:fixed; left:0; right:0; bottom:0; z-index:20;
-  display:flex; gap:10px; align-items:center;
+  display:flex; align-items:center; justify-content:center;
   padding:10px calc(12px + var(--safe-right)) calc(10px + var(--safe-bottom)) calc(12px + var(--safe-left));
   background:linear-gradient(180deg,rgba(11,16,32,0),rgba(11,16,32,.92) 45%);
 }
-.actbar .btn { flex:1 1 0; min-width:0; padding:.9rem .4rem; font-size:1rem; }
+.actbar .btn { flex:0 1 auto; padding:.9rem 1.4rem; font-size:1rem; }
 .actbar__count {
   margin-left:.45em; font-variant-numeric:tabular-nums; color:var(--cream); opacity:.9;
 }
 .actbar__count.is-ready { color:var(--neon); opacity:1; }
 
-/* ===== Bottom sheets (keypad + hints) ===== */
+/* ===== Bottom sheet (hints) ===== */
 .sheet {
   position:fixed; inset:0; z-index:120; display:flex; align-items:flex-end;
   background:rgba(5,8,16,.6); opacity:0; transition:opacity .25s ease;
@@ -247,37 +247,6 @@
   background:transparent; border:1px solid rgba(243,234,214,.25); border-radius:12px; cursor:pointer;
 }
 .sheet__close:focus-visible { outline:3px solid var(--neon); outline-offset:2px; }
-.sheet__msg { min-height:1.4em; margin:8px 0 0; text-align:center; font-size:.95rem; color:#ff9a9a; }
-
-/* ----- 4-digit display (plain divs, so no native keyboard) ----- */
-.code { display:flex; justify-content:center; gap:10px; margin:14px 0 0; }
-.code__slot {
-  width:46px; height:56px; display:grid; place-items:center;
-  font-size:1.6rem; font-weight:700; color:var(--cream);
-  background:var(--panel); border:2px solid rgba(243,234,214,.25); border-radius:12px;
-}
-.code__slot.is-set { border-color:var(--neon); color:var(--neon); }
-
-/* ----- Keypad: big keys, 3 across ----- */
-.pad { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:12px; }
-.pad__key {
-  min-height:56px; font:inherit; font-size:1.5rem; font-weight:700;
-  color:var(--cream); background:#1b2545; border:2px solid #2f3c66; border-radius:14px;
-  cursor:pointer; touch-action:manipulation; -webkit-tap-highlight-color:transparent;
-}
-.pad__key:active { transform:translateY(1px); background:#25315a; }
-.pad__key:focus-visible { outline:3px solid var(--neon); outline-offset:2px; }
-.pad__key--go { color:var(--navy); background:var(--neon); border-color:var(--neon); font-size:1.05rem; }
-
-/* ----- Wrong-code shake ----- */
-@keyframes shake {
-  0%,100% { transform:translateX(0); }
-  15% { transform:translateX(-10px); } 30% { transform:translateX(9px); }
-  45% { transform:translateX(-7px); } 60% { transform:translateX(6px); }
-  75% { transform:translateX(-4px); } 90% { transform:translateX(2px); }
-}
-.is-shaking { animation:shake .4s ease; }
-
 /* ----- Hints list ----- */
 .hints {
   list-style:none; margin:14px 0 0; padding:0; display:grid; gap:10px;
@@ -298,48 +267,6 @@
 .reveal-wrap { margin-top:14px; display:grid; justify-items:center; }
 .reveal-wrap[hidden] { display:none; }
 
-/* ===== Success (below the fragment tray, so slot 3 stays visible) ===== */
-.success {
-  position:fixed; inset:0; z-index:40; display:grid; place-items:center;
-  padding:calc(24px + var(--safe-top)) 20px calc(24px + var(--safe-bottom));
-  background:radial-gradient(120% 90% at 50% 0%,rgba(16,26,54,.92),rgba(5,8,16,.96) 70%);
-  opacity:0; transition:opacity .35s ease;
-}
-.success[hidden] { display:none; }
-.success.is-open { opacity:1; }
-.success__panel {
-  width:min(460px,100%); display:grid; gap:18px; justify-items:center; text-align:center;
-  padding:clamp(20px,5vw,30px); background:#101836;
-  border:2px solid rgba(57,255,20,.4); border-radius:18px; box-shadow:0 20px 50px rgba(0,0,0,.6);
-}
-.success__from { margin:0; font-size:.76rem; letter-spacing:.4em; text-transform:uppercase; color:var(--neon); }
-.success__msg { margin:0; font-size:clamp(1.15rem,5.5vw,1.55rem); line-height:1.35; color:var(--cream); }
-.success__slot { margin:0; display:flex; align-items:center; gap:12px; color:var(--cream-dim); font-size:.95rem; }
-.success__letter {
-  width:52px; height:52px; display:grid; place-items:center;
-  font-size:1.8rem; font-weight:700; color:var(--navy); background:var(--neon); border-radius:14px;
-  box-shadow:0 0 22px var(--neon-soft);
-}
-@keyframes stampIn {
-  0% { transform:scale(.2) rotate(-18deg); opacity:0; }
-  60% { transform:scale(1.12) rotate(4deg); opacity:1; }
-  100% { transform:scale(1) rotate(0); opacity:1; }
-}
-.success.is-open .success__letter { animation:stampIn .5s cubic-bezier(.2,1.3,.4,1) both; }
-
-/* ----- the awarded letter drops into tray slot 3 ----- */
-@keyframes dropIn {
-  0% { transform:translateY(-22px) scale(.6); opacity:0; }
-  60% { transform:translateY(2px) scale(1.12); opacity:1; }
-  100% { transform:translateY(0) scale(1); opacity:1; }
-}
-.just-earned .fragment-slot:nth-child(3) { animation:dropIn .6s cubic-bezier(.2,1.3,.4,1) both; }
-
-/* ===== Green flash on success (under the tray, over the scene) ===== */
-.flash { position:fixed; inset:0; z-index:45; pointer-events:none; background:var(--neon); opacity:0; }
-.flash.is-on { animation:greenFlash .6s ease-out both; }
-@keyframes greenFlash { 0% { opacity:.75; } 100% { opacity:0; } }
-
 /* ===== "Reveal digits": all four chalk marks stay lit for good ===== */
 .scene.revealed .chalk { opacity:1; -webkit-mask-image:none; mask-image:none; }
 .scene.revealed .chalk__digit { color:#fff; }
@@ -353,10 +280,8 @@
 @media (prefers-reduced-motion: reduce) {
   .scene.is-flickering .corridor,
   .switch.is-wiggling .switch__rocker,
-  .is-shaking, .flash.is-on, .caret,
-  .success.is-open .success__letter,
-  .just-earned .fragment-slot { animation:none; }
+  .caret { animation:none; }
   .scene__dark, .chalk, .torch-hint, .switch__rocker, .overlay, .sticky,
-  .sheet, .sheet__panel, .success { transition:none; }
+  .sheet, .sheet__panel { transition:none; }
   .sheet__panel { transform:none; }
 }
