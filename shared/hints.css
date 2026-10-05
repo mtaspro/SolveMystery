@@ -1,0 +1,67 @@
+/* shared/hints.css — the reusable "Stuck?" hint system (see /shared/hints.js).
+   Builds on the tokens in /shared/style.css. Mobile-first, touch-only. */
+
+/* ---- Fixed bottom action bar (holds the "Stuck?" button) ---- */
+.actbar {
+  position:fixed; left:0; right:0; bottom:0; z-index:20;
+  display:flex; align-items:center; justify-content:center;
+  padding:10px calc(12px + var(--safe-right)) calc(10px + var(--safe-bottom)) calc(12px + var(--safe-left));
+  background:linear-gradient(180deg,rgba(11,16,32,0),rgba(11,16,32,.92) 45%);
+}
+.actbar .btn { flex:0 1 auto; padding:.9rem 1.4rem; font-size:1rem; }
+.actbar__count {
+  margin-left:.45em; font-variant-numeric:tabular-nums; color:var(--cream); opacity:.9;
+}
+.actbar__count.is-ready { color:var(--neon); opacity:1; }
+
+/* ---- Bottom sheet ---- */
+.sheet {
+  position:fixed; inset:0; z-index:120; display:flex; align-items:flex-end;
+  background:rgba(5,8,16,.6); opacity:0; transition:opacity .25s ease;
+}
+.sheet[hidden] { display:none; }
+.sheet.is-open { opacity:1; }
+.sheet__panel {
+  width:100%; max-width:520px; margin:0 auto;
+  max-height:calc(100dvh - 20px); overflow-y:auto;
+  padding:14px calc(16px + var(--safe-right)) calc(16px + var(--safe-bottom)) calc(16px + var(--safe-left));
+  background:#101836; border-top:2px solid rgba(57,255,20,.35); border-radius:18px 18px 0 0;
+  box-shadow:0 -18px 40px rgba(0,0,0,.6);
+  transform:translateY(18px); transition:transform .25s ease;
+}
+.sheet.is-open .sheet__panel { transform:translateY(0); }
+.sheet__head { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.sheet__title { margin:0; font-size:.8rem; letter-spacing:.26em; text-transform:uppercase; color:var(--neon); }
+.sheet__close {
+  min-width:44px; min-height:44px; font:inherit; font-size:1.1rem; color:var(--cream);
+  background:transparent; border:1px solid rgba(243,234,214,.25); border-radius:12px; cursor:pointer;
+}
+.sheet__close:focus-visible { outline:3px solid var(--neon); outline-offset:2px; }
+
+/* ---- Hint list: unlocked + locked ---- */
+.hints {
+  list-style:none; margin:14px 0 0; padding:0; display:grid; gap:10px;
+  counter-reset:h;
+}
+.hints__item, .hints__locked {
+  position:relative; padding:12px 14px 12px 40px; border-radius:12px; font-size:.98rem;
+}
+.hints__item { background:var(--panel); border-left:3px solid var(--neon); }
+.hints__item::before, .hints__locked::before {
+  position:absolute; left:14px; top:12px; counter-increment:h; content:counter(h);
+  font-weight:700; color:var(--neon);
+}
+.hints__locked {
+  background:rgba(20,28,51,.5); border-left:3px dashed rgba(243,234,214,.2); color:var(--cream-dim);
+}
+.hints__locked::before { color:var(--cream-dim); }
+
+/* Slot for page-specific extras (e.g. a "Reveal digits" button). Invisible until used. */
+.sheet__foot { display:none; }
+.sheet__foot:not(:empty) { display:block; }
+
+/* ---- Reduced motion ---- */
+@media (prefers-reduced-motion: reduce) {
+  .sheet, .sheet__panel { transition:none; }
+  .sheet__panel { transform:none; }
+}

@@ -5,20 +5,69 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#0b1020">
   <meta name="robots" content="noindex">
-  <title>Library — coming soon</title>
+  <title>Stage 2 — The Library</title>
   <link rel="stylesheet" href="/shared/style.css">
+  <link rel="stylesheet" href="/2749/style.css">
+  <link rel="stylesheet" href="/shared/hints.css">
 </head>
 <body>
-  <!-- TEMPORARY placeholder: the next door in the chain, so the corridor's
-       hint 3 ("type the number after the site name") can be tested end to end. -->
-  <main class="screen">
-    <header>
-      <p class="eyebrow">Next door</p>
-      <h1 class="title">Library</h1>
-      <p class="lede">Coming soon.</p>
+  <div class="lib">
+    <!-- ===== Catalog header. The site name is rendered from SITE.name in
+         /2749/script.js; the copy below is only a no-JS fallback. ===== -->
+    <header class="cat">
+      <p class="cat__crest" aria-hidden="true">Est. 1974 &nbsp;·&nbsp; Non-circulating after hours</p>
+      <h1 class="cat__title">
+        <span id="siteName">Greenfield School Library</span>
+        <span class="cat__title-sub">Online Catalog</span>
+      </h1>
+
+      <!-- Decorative only: the catalogue search was decommissioned, so this is
+           hidden from assistive tech rather than being a control that does nothing. -->
+      <div class="cat-search" aria-hidden="true">
+        <svg class="cat-search__icon" viewBox="0 0 24 24" focusable="false">
+          <circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="2"/>
+          <line x1="15.4" y1="15.4" x2="21" y2="21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <span class="cat-search__field">Search by title, author or subject</span>
+        <span class="cat-search__go">Search</span>
+      </div>
+
+      <p class="cat__acct">
+        <span class="cat__acct-label">Account:</span>
+        <span id="acctName">E. XAMINER</span>
+        <span class="cat__acct-sep">-</span>
+        <span id="acctDue">5 items overdue</span>
+      </p>
     </header>
 
-    <a class="btn" href="/">Back to start</a>
-  </main>
+    <main class="lib__main">
+      <!-- ===== The shelf. Two rows of four spines, built from BOOKS in script.js. ===== -->
+      <div class="shelf" id="shelf"></div>
+      <p class="lib__hint">Tap a spine to check its borrowing record.</p>
+    </main>
+  </div>
+
+  <!-- ===== Book record dialog (filled in by script.js) ===== -->
+  <div class="modal" id="bookModal" hidden>
+    <div class="modal__card" role="dialog" aria-modal="true" aria-labelledby="bookTitle">
+      <p class="modal__eyebrow" id="bookEyebrow"></p>
+      <h2 class="modal__title" id="bookTitle"></h2>
+      <div class="stamp" id="bookStamp"></div>
+      <button class="cat-btn" id="bookClose" type="button">Close</button>
+    </div>
+  </div>
+
+  <!-- ===== Intro overlay: a note from The Examiner ===== -->
+  <div class="intro" id="intro">
+    <div class="intro__card">
+      <p class="intro__from">A note from The Examiner</p>
+      <p class="intro__text" id="introText"></p>
+      <button class="cat-btn cat-btn--solid" id="beginBtn" type="button">Begin</button>
+    </div>
+  </div>
+
+  <p class="sr-only" id="status" role="status" aria-live="polite"></p>
+
+  <script type="module" src="/2749/script.js"></script>
 </body>
 </html>

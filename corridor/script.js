@@ -4,15 +4,16 @@
 // answer checking, no code entry, no saved progress and no "next" button.
 // Scene: lightsOn -> lightsOff. The FIRST power cut comes from reading the
 // sticky note; after that the wall switch toggles light/dark and the torch
-// follows the pointer. Hints unlock at 45s / 90s / 150s, and after hint 3 a
-// "Reveal digits" button lights all four chalk marks for good.
+// follows the pointer. Hints come from the shared hint system (/shared/hints.js);
+// once every hint is out, a corridor-specific "Reveal digits" button lights the
+// four chalk marks for good.
 // Motion is skipped for users who prefer reduced motion. Taps/clicks only.
 
 import { CONFIG } from '/config.js';
+import { initHints } from '/shared/hints.js';
 
 const STAGE = 's1';                // this page's stage id in CONFIG
 const HINTS = CONFIG.stages[STAGE].hints;
-const HINT_TIMES = [45, 90, 150];  // seconds after page load
 const INTRO_TEXT = "Candidates, your results have been relocated. Remain calm. Panic is permitted.";
 
 // Read the user's motion preference at call time so it stays live.
@@ -26,13 +27,6 @@ const beginBtn = document.getElementById('beginBtn');
 const sticky = document.getElementById('stickyNote');
 const switchBtn = document.getElementById('lightSwitch');
 const status = document.getElementById('status');
-const hintBtn = document.getElementById('hintBtn');
-const hintCount = document.getElementById('hintCount');
-const hintSheet = document.getElementById('hintSheet');
-const hintClose = document.getElementById('hintClose');
-const hintList = document.getElementById('hintList');
-const revealWrap = document.getElementById('revealWrap');
-const revealBtn = document.getElementById('revealBtn');
 
 // --- state machine ---
 const Lights = { ON: 'lightsOn', OFF: 'lightsOff' };
@@ -181,68 +175,29 @@ function fadeTorchHint() {
   scene.classList.add('has-dragged');
 }
 
-// --- hints: unlock at 45 / 90 / 150s, countdown on the locked button -----
-const loadedAt = Date.now();
-let hintsOpen = 0;    // how many hints have unlocked
-let hintTimer = 0;
+// --- hints: shared system, plus one corridor-specific extra ----------------
+// "Reveal digits" deliberately lives here, not in hints.js: the corridor builds
+// its own button and mounts it in the sheet's foot slot once every hint is out.
+const revealWrap = document.createElement('div');
+revealWrap.className = 'reveal-wrap';
+const revealBtn = document.createElement('button');
+revealBtn.type = 'button';
+revealBtn.className = 'btn btn--ghost';
+revealBtn.textContent = 'Reveal digits';
+revealWrap.appendChild(revealBtn);
 
-function fmt(sec) {
-  return Math.floor(sec / 60) + ':' + String(sec % 60).padStart(2, '0');
-}
-function tickHints() {
-  const elapsed = (Date.now() - loadedAt) / 1000;
-  let n = 0;
-  while (n < HINT_TIMES.length && elapsed >= HINT_TIMES[n]) n++;
-  hintsOpen = n;
-  if (n >= HINT_TIMES.length) {
-    hintCount.textContent = n + ' hints';
-    hintCount.classList.add('is-ready');
-  } else {
-    hintCount.textContent = fmt(Math.ceil(HINT_TIMES[n] - elapsed));
-    hintCount.classList.remove('is-ready');
-  }
-}
-
-hintBtn.addEventListener('click', openHints);
-function openHints() {
-  const elapsed = (Date.now() - loadedAt) / 1000;
-  hintList.innerHTML = '';
-  HINTS.forEach((text, i) => {
-    const li = document.createElement('li');
-    const unlocked = i < hintsOpen;
-    li.className = unlocked ? 'hints__item' : 'hints__locked';
-    li.textContent = unlocked ? text
-      : 'Locked — ' + Math.ceil(HINT_TIMES[i] - elapsed) + 's';
-    hintList.appendChild(li);
-  });
-  revealWrap.hidden = hintsOpen < HINTS.length;   // only once hint 3 is out
-  openSheet(hintSheet);
-}
-
+let hintsApi = null;
 revealBtn.addEventListener('click', () => {
   scene.classList.add('revealed');            // all four digits stay lit for good
-  closeSheet(hintSheet);
   say('The digits are revealed.');
+  if (hintsApi) hintsApi.closeSheet();
 });
 
-// --- bottom sheet (hints only) -----
-function openSheet(sheet) {
-  sheet.hidden = false;
-  requestAnimationFrame(() => sheet.classList.add('is-open'));
-}
-function closeSheet(sheet) {
-  if (sheet.hidden) return;
-  sheet.classList.remove('is-open');
-  const hide = () => { sheet.hidden = true; };
-  if (prefersReducedMotion.matches) hide();
-  else setTimeout(hide, 260);
-}
-hintSheet.addEventListener('click', (e) => { if (e.target === hintSheet) closeSheet(hintSheet); });
-hintClose.addEventListener('click', () => closeSheet(hintSheet));
-document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeSheet(hintSheet); });
+hintsApi = initHints({
+  hints: HINTS,
+  onAllUnlocked: ({ foot }) => foot.appendChild(revealWrap),
+});
 
 // --- go ---
 paint();
-tickHints();
-hintTimer = setInterval(tickHints, 1000);
 startIntro();
