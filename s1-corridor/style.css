@@ -1,0 +1,362 @@
+/* s1-corridor/style.css — Stage 1: the corridor.
+   CSS shapes + inline SVG only (no external images).
+   Touch-first, no hover-dependent behaviour, honours prefers-reduced-motion. */
+
+:root {
+  --wall-top:#131c38; --wall-bottom:#0c1226;
+  --locker:#1c2547; --locker-edge:#33406b; --metal:#cdc6b2;
+  --board:#22304f; --board-edge:#3d4d78; --paper:#ece3ca; --ink:#1b2340;
+  --note:#f2e07a; --note-ink:#3c3007;
+}
+
+/* ===== Scene shell ===== */
+.scene {
+  position:relative; min-height:100vh; min-height:100dvh;
+  display:flex; flex-direction:column; overflow:hidden; isolation:isolate;
+  /* torch: hole centre (driven by JS in rAF) + radius */
+  --x:50%; --y:42%; --torch-r:90px;
+  /* drag to look around; never select text or pop the long-press menu */
+  touch-action:none; user-select:none; -webkit-user-select:none; -webkit-touch-callout:none;
+}
+.scene:focus { outline:none; }
+.corridor { flex:1 1 auto; display:flex; flex-direction:column; min-height:0; }
+
+/* ===== Back wall ===== */
+.wall {
+  position:relative; flex:1 1 auto; display:grid; place-items:center;
+  padding:clamp(56px,12vh,120px) 16px 24px;
+  background:linear-gradient(180deg,var(--wall-top),var(--wall-bottom));
+  box-shadow:inset 0 -40px 60px rgba(0,0,0,.35);
+}
+
+/* ----- Wall clock (inline SVG) ----- */
+.clock {
+  position:absolute; top:clamp(12px,4vh,40px); right:clamp(12px,5vw,40px);
+  width:clamp(64px,20vw,96px); aspect-ratio:1; filter:drop-shadow(0 6px 14px rgba(0,0,0,.5));
+}
+.clock__svg { width:100%; height:100%; display:block; }
+.clock__face { fill:var(--paper); stroke:var(--board-edge); stroke-width:4; }
+.clock__hole { fill:var(--ink); }
+.clock__ticks line { stroke:var(--ink); stroke-width:3; stroke-linecap:round; }
+.clock__hand { stroke:var(--ink); stroke-linecap:round; }
+.clock__hand--hour { stroke-width:5; }
+.clock__hand--min { stroke-width:3.5; }
+
+/* ===== Noticeboard ===== */
+.noticeboard {
+  position:relative; width:min(560px,92vw);
+  display:flex; flex-wrap:wrap; gap:clamp(12px,3vw,20px);
+  align-items:flex-start; justify-content:center; padding:clamp(16px,4vw,24px);
+  background:var(--board); border:6px solid var(--board-edge); border-radius:10px;
+  box-shadow:0 18px 34px rgba(0,0,0,.5), inset 0 0 60px rgba(0,0,0,.35);
+}
+
+/* ----- Timetable card ----- */
+.timetable {
+  flex:1 1 200px; min-width:180px; padding:14px 16px;
+  background:var(--paper); color:var(--ink); border-radius:6px;
+  box-shadow:0 8px 16px rgba(0,0,0,.35); text-align:left;
+}
+.timetable__title {
+  margin:0 0 8px; padding-bottom:6px; font-size:1rem; letter-spacing:.16em;
+  text-transform:uppercase; border-bottom:2px solid rgba(27,35,64,.25);
+}
+.timetable__list { margin:0; padding:0; list-style:none; display:grid; gap:6px; }
+.timetable__row { display:flex; gap:10px; align-items:baseline; font-size:.98rem; }
+.timetable__slot {
+  font-size:.78rem; font-weight:700; letter-spacing:.04em;
+  color:#fff; background:var(--ink); border-radius:4px; padding:1px 7px;
+}
+
+/* ----- Sticky note (tappable) ----- */
+.sticky {
+  position:relative; flex:0 0 auto; min-height:56px; min-width:150px;
+  padding:18px 16px; font:inherit; font-size:1rem; font-weight:700;
+  color:var(--note-ink); background:var(--note); border:0; border-radius:4px;
+  text-align:center; cursor:pointer; transform:rotate(-4deg);
+  box-shadow:0 10px 18px rgba(0,0,0,.4);
+  -webkit-tap-highlight-color:transparent; touch-action:manipulation;
+  transition:transform .15s ease, box-shadow .15s ease;
+}
+.sticky:active { transform:rotate(-4deg) scale(.95); }
+.sticky:focus-visible { outline:3px solid var(--neon); outline-offset:3px; }
+.sticky__pin {
+  position:absolute; top:6px; left:50%; width:12px; height:12px; margin-left:-6px;
+  border-radius:50%; background:radial-gradient(circle at 35% 30%,#ff6b6b,#b3261e);
+  box-shadow:0 2px 4px rgba(0,0,0,.45);
+}
+.sticky__text { display:block; }
+.sticky.is-used { transform:rotate(-2deg); box-shadow:0 6px 12px rgba(0,0,0,.4); }
+
+/* ===== Lockers (CSS shapes) ===== */
+.lockers {
+  display:flex; gap:4px; padding:0 12px; height:clamp(96px,22vh,160px);
+  background:linear-gradient(180deg,#0e1730,#0a1024);
+}
+.locker {
+  position:relative; flex:1 1 0; border:2px solid var(--locker-edge); border-bottom:0;
+  border-radius:6px 6px 0 0; background:linear-gradient(180deg,var(--locker),#151d3a);
+}
+.locker::before {            /* vent slots */
+  content:""; position:absolute; top:14%; left:12%; width:76%; height:22%;
+  background:repeating-linear-gradient(180deg,transparent 0 4px,rgba(0,0,0,.35) 4px 6px);
+}
+.locker::after {             /* handle */
+  content:""; position:absolute; top:50%; left:16%; width:8px; height:22%;
+  border-radius:4px; background:var(--metal); box-shadow:0 1px 2px rgba(0,0,0,.5);
+}
+
+/* ===== Floor ===== */
+.floor {
+  height:clamp(44px,12vh,96px); border-top:2px solid rgba(57,255,20,.15);
+  background:repeating-linear-gradient(90deg,#0a1024 0 40px,#0d1530 40px 80px);
+}
+
+/* ===== Wall light switch (bottom-right, 56px target) ===== */
+.switch {
+  position:absolute; right:calc(12px + var(--safe-right)); bottom:calc(86px + var(--safe-bottom));
+  z-index:5; width:56px; height:56px; min-width:56px; min-height:56px;
+  display:grid; place-items:center; padding:0; background:transparent; border:0;
+  cursor:pointer; -webkit-tap-highlight-color:transparent; touch-action:manipulation;
+}
+.switch:focus-visible { outline:3px solid var(--neon); outline-offset:4px; border-radius:12px; }
+.switch__plate {
+  width:46px; height:54px; display:grid; place-items:center;
+  background:#1a2444; border:2px solid #3a4a72; border-radius:8px;
+  box-shadow:0 6px 14px rgba(0,0,0,.5);
+}
+.switch__rocker {
+  width:24px; height:32px; border-radius:6px;
+  background:linear-gradient(180deg,#f0e8d2,#a9a291);
+  box-shadow:inset 0 -3px 0 rgba(0,0,0,.25);
+  transition:transform .2s ease, background .2s ease;
+}
+.scene.dark .switch__rocker { transform:translateY(3px); background:linear-gradient(180deg,#6b6a63,#3c3b37); }
+.scene.dark .switch__plate { box-shadow:0 0 14px var(--neon-soft), 0 6px 14px rgba(0,0,0,.5); }
+@keyframes wiggle {
+  0%,100% { transform:rotate(0deg); }
+  20% { transform:rotate(-9deg); } 45% { transform:rotate(8deg); } 70% { transform:rotate(-5deg); }
+}
+.switch.is-wiggling .switch__rocker { animation:wiggle .4s ease-in-out 1; }
+
+/* ===== Darkness layer (torch hole follows --x/--y) + power-cut flicker ===== */
+.scene__dark {
+  position:absolute; inset:0; z-index:3; pointer-events:none; opacity:0;
+  transition:opacity .45s ease;
+  background:radial-gradient(circle var(--torch-r) at var(--x) var(--y),
+    rgba(0,0,0,0) 0, rgba(0,0,0,.2) 45%, rgba(0,0,0,.72) 78%, rgba(0,0,0,.96) 100%);
+}
+.scene.dark .scene__dark { opacity:1; }
+@keyframes flicker {
+  0% { filter:brightness(1); } 8% { filter:brightness(.22); } 16% { filter:brightness(1.12); }
+  30% { filter:brightness(.16); } 44% { filter:brightness(1); } 58% { filter:brightness(.25); }
+  72% { filter:brightness(1.08); } 86% { filter:brightness(.3); } 100% { filter:brightness(.9); }
+}
+.scene.is-flickering .corridor { animation:flicker .6s linear 1; }
+
+/* ===== Chalk marks: only lit inside the torch radius ===== */
+.chalk {
+  position:absolute; inset:0; z-index:4; pointer-events:none; opacity:0;
+  transition:opacity .45s ease;
+  -webkit-mask-image:radial-gradient(circle var(--torch-r) at var(--x) var(--y),#000 0,#000 34%,transparent 100%);
+          mask-image:radial-gradient(circle var(--torch-r) at var(--x) var(--y),#000 0,#000 34%,transparent 100%);
+}
+.scene.dark .chalk { opacity:1; }
+.chalk__mark {
+  position:absolute; left:var(--cx); top:var(--cy); transform:translate(-50%,-50%);
+  display:flex; align-items:center; gap:.3em; color:#dfe9ff;
+}
+.chalk__doodle {
+  width:32px; height:32px; fill:none; stroke:currentColor; stroke-width:1.6;
+  stroke-linecap:round; stroke-linejoin:round; opacity:.85;
+}
+.chalk__digit {
+  font-size:2rem; font-weight:700; line-height:1;
+  color:#eef4ff; text-shadow:0 0 6px rgba(160,195,255,.9), 0 0 16px rgba(90,150,255,.65);
+}
+
+/* ===== Torch instruction (fades after the first drag) ===== */
+.torch-hint {
+  position:absolute; left:50%; bottom:calc(152px + var(--safe-bottom)); transform:translateX(-50%);
+  z-index:6; margin:0; padding:8px 14px; border-radius:999px; white-space:nowrap;
+  font-size:.9rem; color:var(--cream);
+  background:rgba(11,16,32,.6); border:1px solid rgba(243,234,214,.2);
+  opacity:0; transition:opacity .4s ease; pointer-events:none;
+}
+.scene.dark .torch-hint { opacity:.7; }
+.scene.dark.has-dragged .torch-hint { opacity:0; }
+
+/* ===== Intro overlay ===== */
+.overlay {
+  position:fixed; inset:0; z-index:100; display:grid; place-items:center;
+  padding:calc(24px + var(--safe-top)) 20px calc(24px + var(--safe-bottom));
+  background:radial-gradient(120% 90% at 50% 0%,#101a36 0%,#070b16 70%);
+  transition:opacity .35s ease, visibility .35s ease;
+}
+.overlay.is-hidden { opacity:0; visibility:hidden; pointer-events:none; }
+.overlay__card {
+  width:min(560px,100%); display:grid; gap:clamp(18px,5vw,28px);
+  justify-items:center; text-align:center;
+}
+.overlay__from { margin:0; font-size:.8rem; letter-spacing:.4em; text-transform:uppercase; color:var(--neon); }
+.overlay__text {
+  margin:0; min-height:4.6em; font-size:clamp(1.35rem,6vw,2rem);
+  line-height:1.35; color:var(--cream);
+}
+.caret {
+  display:inline-block; width:.6ch; height:1em; margin-left:2px; vertical-align:-.12em;
+  background:var(--neon); animation:blink 1s steps(1) infinite;
+}
+@keyframes blink { 50% { opacity:0; } }
+.overlay .btn { opacity:0; visibility:hidden; transition:opacity .25s ease, visibility .25s ease; }
+.overlay.is-ready .btn { opacity:1; visibility:visible; }
+
+/* ===== Action bar (over the floor; works in light and dark) ===== */
+.actbar {
+  position:fixed; left:0; right:0; bottom:0; z-index:20;
+  display:flex; gap:10px; align-items:center;
+  padding:10px calc(12px + var(--safe-right)) calc(10px + var(--safe-bottom)) calc(12px + var(--safe-left));
+  background:linear-gradient(180deg,rgba(11,16,32,0),rgba(11,16,32,.92) 45%);
+}
+.actbar .btn { flex:1 1 0; min-width:0; padding:.9rem .4rem; font-size:1rem; }
+.actbar__count {
+  margin-left:.45em; font-variant-numeric:tabular-nums; color:var(--cream); opacity:.9;
+}
+.actbar__count.is-ready { color:var(--neon); opacity:1; }
+
+/* ===== Bottom sheets (keypad + hints) ===== */
+.sheet {
+  position:fixed; inset:0; z-index:120; display:flex; align-items:flex-end;
+  background:rgba(5,8,16,.6); opacity:0; transition:opacity .25s ease;
+}
+.sheet[hidden] { display:none; }
+.sheet.is-open { opacity:1; }
+.sheet__panel {
+  width:100%; max-width:520px; margin:0 auto;
+  max-height:calc(100dvh - 20px); overflow-y:auto;
+  padding:14px calc(16px + var(--safe-right)) calc(16px + var(--safe-bottom)) calc(16px + var(--safe-left));
+  background:#101836; border-top:2px solid rgba(57,255,20,.35); border-radius:18px 18px 0 0;
+  box-shadow:0 -18px 40px rgba(0,0,0,.6);
+  transform:translateY(18px); transition:transform .25s ease;
+}
+.sheet.is-open .sheet__panel { transform:translateY(0); }
+.sheet__head { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.sheet__title { margin:0; font-size:.8rem; letter-spacing:.26em; text-transform:uppercase; color:var(--neon); }
+.sheet__close {
+  min-width:44px; min-height:44px; font:inherit; font-size:1.1rem; color:var(--cream);
+  background:transparent; border:1px solid rgba(243,234,214,.25); border-radius:12px; cursor:pointer;
+}
+.sheet__close:focus-visible { outline:3px solid var(--neon); outline-offset:2px; }
+.sheet__msg { min-height:1.4em; margin:8px 0 0; text-align:center; font-size:.95rem; color:#ff9a9a; }
+
+/* ----- 4-digit display (plain divs, so no native keyboard) ----- */
+.code { display:flex; justify-content:center; gap:10px; margin:14px 0 0; }
+.code__slot {
+  width:46px; height:56px; display:grid; place-items:center;
+  font-size:1.6rem; font-weight:700; color:var(--cream);
+  background:var(--panel); border:2px solid rgba(243,234,214,.25); border-radius:12px;
+}
+.code__slot.is-set { border-color:var(--neon); color:var(--neon); }
+
+/* ----- Keypad: big keys, 3 across ----- */
+.pad { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:12px; }
+.pad__key {
+  min-height:56px; font:inherit; font-size:1.5rem; font-weight:700;
+  color:var(--cream); background:#1b2545; border:2px solid #2f3c66; border-radius:14px;
+  cursor:pointer; touch-action:manipulation; -webkit-tap-highlight-color:transparent;
+}
+.pad__key:active { transform:translateY(1px); background:#25315a; }
+.pad__key:focus-visible { outline:3px solid var(--neon); outline-offset:2px; }
+.pad__key--go { color:var(--navy); background:var(--neon); border-color:var(--neon); font-size:1.05rem; }
+
+/* ----- Wrong-code shake ----- */
+@keyframes shake {
+  0%,100% { transform:translateX(0); }
+  15% { transform:translateX(-10px); } 30% { transform:translateX(9px); }
+  45% { transform:translateX(-7px); } 60% { transform:translateX(6px); }
+  75% { transform:translateX(-4px); } 90% { transform:translateX(2px); }
+}
+.is-shaking { animation:shake .4s ease; }
+
+/* ----- Hints list ----- */
+.hints {
+  list-style:none; margin:14px 0 0; padding:0; display:grid; gap:10px;
+  counter-reset:h;
+}
+.hints__item, .hints__locked {
+  position:relative; padding:12px 14px 12px 40px; border-radius:12px; font-size:.98rem;
+}
+.hints__item { background:var(--panel); border-left:3px solid var(--neon); }
+.hints__item::before, .hints__locked::before {
+  position:absolute; left:14px; top:12px; counter-increment:h; content:counter(h);
+  font-weight:700; color:var(--neon);
+}
+.hints__locked {
+  background:rgba(20,28,51,.5); border-left:3px dashed rgba(243,234,214,.2); color:var(--cream-dim);
+}
+.hints__locked::before { color:var(--cream-dim); }
+.reveal-wrap { margin-top:14px; display:grid; justify-items:center; }
+.reveal-wrap[hidden] { display:none; }
+
+/* ===== Success (below the fragment tray, so slot 3 stays visible) ===== */
+.success {
+  position:fixed; inset:0; z-index:40; display:grid; place-items:center;
+  padding:calc(24px + var(--safe-top)) 20px calc(24px + var(--safe-bottom));
+  background:radial-gradient(120% 90% at 50% 0%,rgba(16,26,54,.92),rgba(5,8,16,.96) 70%);
+  opacity:0; transition:opacity .35s ease;
+}
+.success[hidden] { display:none; }
+.success.is-open { opacity:1; }
+.success__panel {
+  width:min(460px,100%); display:grid; gap:18px; justify-items:center; text-align:center;
+  padding:clamp(20px,5vw,30px); background:#101836;
+  border:2px solid rgba(57,255,20,.4); border-radius:18px; box-shadow:0 20px 50px rgba(0,0,0,.6);
+}
+.success__from { margin:0; font-size:.76rem; letter-spacing:.4em; text-transform:uppercase; color:var(--neon); }
+.success__msg { margin:0; font-size:clamp(1.15rem,5.5vw,1.55rem); line-height:1.35; color:var(--cream); }
+.success__slot { margin:0; display:flex; align-items:center; gap:12px; color:var(--cream-dim); font-size:.95rem; }
+.success__letter {
+  width:52px; height:52px; display:grid; place-items:center;
+  font-size:1.8rem; font-weight:700; color:var(--navy); background:var(--neon); border-radius:14px;
+  box-shadow:0 0 22px var(--neon-soft);
+}
+@keyframes stampIn {
+  0% { transform:scale(.2) rotate(-18deg); opacity:0; }
+  60% { transform:scale(1.12) rotate(4deg); opacity:1; }
+  100% { transform:scale(1) rotate(0); opacity:1; }
+}
+.success.is-open .success__letter { animation:stampIn .5s cubic-bezier(.2,1.3,.4,1) both; }
+
+/* ----- the awarded letter drops into tray slot 3 ----- */
+@keyframes dropIn {
+  0% { transform:translateY(-22px) scale(.6); opacity:0; }
+  60% { transform:translateY(2px) scale(1.12); opacity:1; }
+  100% { transform:translateY(0) scale(1); opacity:1; }
+}
+.just-earned .fragment-slot:nth-child(3) { animation:dropIn .6s cubic-bezier(.2,1.3,.4,1) both; }
+
+/* ===== Green flash on success (under the tray, over the scene) ===== */
+.flash { position:fixed; inset:0; z-index:45; pointer-events:none; background:var(--neon); opacity:0; }
+.flash.is-on { animation:greenFlash .6s ease-out both; }
+@keyframes greenFlash { 0% { opacity:.75; } 100% { opacity:0; } }
+
+/* ===== "Reveal digits": all four chalk marks stay lit for good ===== */
+.scene.revealed .chalk { opacity:1; -webkit-mask-image:none; mask-image:none; }
+.scene.revealed .chalk__digit { color:#fff; }
+
+/* Hover is pure polish for accurate pointers; nothing depends on it. */
+@media (hover:hover) and (pointer:fine) {
+  .sticky:hover { box-shadow:0 14px 24px rgba(0,0,0,.45); }
+}
+
+/* ===== Reduced motion: keep the states, drop the animation ===== */
+@media (prefers-reduced-motion: reduce) {
+  .scene.is-flickering .corridor,
+  .switch.is-wiggling .switch__rocker,
+  .is-shaking, .flash.is-on, .caret,
+  .success.is-open .success__letter,
+  .just-earned .fragment-slot { animation:none; }
+  .scene__dark, .chalk, .torch-hint, .switch__rocker, .overlay, .sticky,
+  .sheet, .sheet__panel, .success { transition:none; }
+  .sheet__panel { transform:none; }
+}

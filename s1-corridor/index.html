@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0b1020">
+  <title>Stage 1 — The Corridor</title>
+  <link rel="stylesheet" href="/shared/style.css">
+  <link rel="stylesheet" href="/s1-corridor/style.css">
+</head>
+<body>
+  <noscript><style>.overlay{display:none}</style></noscript>
+
+  <!-- ===== Intro overlay ===== -->
+  <div class="overlay" id="intro" role="dialog" aria-modal="true" aria-labelledby="introFrom">
+    <div class="overlay__card">
+      <p class="overlay__from" id="introFrom">The Examiner</p>
+      <p class="overlay__text" id="introText" aria-hidden="true"><span id="typed"></span><span class="caret"></span></p>
+      <p class="sr-only">Candidates, your results have been relocated. Remain calm. Panic is permitted.</p>
+      <button class="btn" id="beginBtn" type="button">Begin</button>
+    </div>
+  </div>
+
+  <!-- ===== Stage 1 scene ===== -->
+  <main class="scene" id="scene" tabindex="-1">
+    <div class="corridor">
+      <!-- Back wall -->
+      <div class="wall">
+        <!-- Wall clock (inline SVG, no external image) -->
+        <div class="clock" role="img" aria-label="Wall clock, quarter past three">
+          <svg class="clock__svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false">
+            <circle class="clock__face" cx="50" cy="50" r="46"/>
+            <g class="clock__ticks">
+              <line x1="50" y1="8" x2="50" y2="17"/>
+              <line x1="50" y1="83" x2="50" y2="92"/>
+              <line x1="8" y1="50" x2="17" y2="50"/>
+              <line x1="83" y1="50" x2="92" y2="50"/>
+            </g>
+            <line class="clock__hand clock__hand--hour" x1="50" y1="50" x2="50" y2="30"/>
+            <line class="clock__hand clock__hand--min" x1="50" y1="50" x2="78" y2="50"/>
+            <circle class="clock__hole" cx="50" cy="50" r="3"/>
+          </svg>
+        </div>
+
+        <!-- Noticeboard -->
+        <section class="noticeboard" aria-label="Noticeboard">
+          <article class="timetable" aria-label="Timetable">
+            <h2 class="timetable__title">Timetable</h2>
+            <ul class="timetable__list">
+              <li class="timetable__row"><span class="timetable__slot">P1</span> Maths</li>
+              <li class="timetable__row"><span class="timetable__slot">P2</span> Physics</li>
+              <li class="timetable__row"><span class="timetable__slot">P3</span> Chemistry</li>
+              <li class="timetable__row"><span class="timetable__slot">P4</span> English</li>
+            </ul>
+          </article>
+
+          <button class="sticky" id="stickyNote" type="button" aria-pressed="false">
+            <span class="sticky__pin" aria-hidden="true"></span>
+            <span class="sticky__text">Don't trust the lights.</span>
+          </button>
+        </section>
+      </div>
+
+      <!-- Lockers (CSS shapes) -->
+      <div class="lockers" aria-hidden="true">
+        <span class="locker"></span><span class="locker"></span><span class="locker"></span>
+        <span class="locker"></span><span class="locker"></span><span class="locker"></span>
+        <span class="locker"></span><span class="locker"></span>
+      </div>
+
+      <!-- Floor -->
+      <div class="floor" aria-hidden="true"></div>
+    </div>
+
+    <!-- Darkness layer: the torch hole follows --x/--y -->
+    <span class="scene__dark" aria-hidden="true"></span>
+
+    <!-- Chalk marks + doodles: revealed only inside the torch radius.
+         Order = timetable order (Maths, Physics, Chemistry, English) -> 2 7 4 9. -->
+    <div class="chalk" aria-hidden="true">
+      <span class="chalk__mark" style="--cx:20%;--cy:30%">
+        <svg class="chalk__doodle" viewBox="0 0 24 24"><path d="M5 7h14M9.5 7v10M15.5 7v10"/></svg>
+        <span class="chalk__digit">2</span>
+      </span>
+      <span class="chalk__mark" style="--cx:73%;--cy:25%">
+        <svg class="chalk__doodle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="2.3"/><ellipse cx="12" cy="12" rx="10" ry="4.3"/><ellipse cx="12" cy="12" rx="10" ry="4.3" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4.3" transform="rotate(-60 12 12)"/></svg>
+        <span class="chalk__digit">7</span>
+      </span>
+      <span class="chalk__mark" style="--cx:27%;--cy:70%">
+        <svg class="chalk__doodle" viewBox="0 0 24 24"><path d="M9 3h6"/><path d="M10 3v6L5.6 18.2A1.8 1.8 0 0 0 7.2 21h9.6a1.8 1.8 0 0 0 1.6-2.8L14 9V3"/><path d="M7.6 14.5h8.8"/></svg>
+        <span class="chalk__digit">4</span>
+      </span>
+      <span class="chalk__mark" style="--cx:74%;--cy:68%">
+        <svg class="chalk__doodle" viewBox="0 0 24 24"><path d="M12 6.5C10 4.8 7.4 4.2 4.5 4.6v13c2.9-.4 5.5.2 7.5 1.9 2-1.7 4.6-2.3 7.5-1.9v-13C16.6 4.2 14 4.8 12 6.5Z"/><path d="M12 6.5v13"/></svg>
+        <span class="chalk__digit">9</span>
+      </span>
+    </div>
+
+    <!-- Faint instruction, fades after the first drag -->
+    <p class="torch-hint" id="torchHint">Drag your finger to look around</p>
+
+    <!-- Wall light switch, bottom-right, 56px tap target -->
+    <button class="switch" id="lightSwitch" type="button" aria-pressed="true" aria-label="Light switch (lights on)">
+      <span class="switch__plate" aria-hidden="true"><span class="switch__rocker"></span></span>
+    </button>
+  </main>
+
+  <!-- ===== Action bar (works in light and dark) ===== -->
+  <div class="actbar">
+    <button class="btn btn--ghost" id="codeBtn" type="button">Enter code</button>
+    <button class="btn btn--ghost" id="hintBtn" type="button">
+      Stuck?<span class="actbar__count" id="hintCount">0:45</span>
+    </button>
+  </div>
+
+  <!-- ===== Keypad bottom sheet ===== -->
+  <div class="sheet" id="keypadSheet" role="dialog" aria-modal="true" aria-labelledby="keypadTitle" hidden>
+    <div class="sheet__panel">
+      <div class="sheet__head">
+        <h2 class="sheet__title" id="keypadTitle">Department code</h2>
+        <button class="sheet__close" id="keypadClose" type="button" aria-label="Close keypad">✕</button>
+      </div>
+      <!-- 4-digit display (no input element => never a native keyboard) -->
+      <div class="code" id="codeDisplay" role="status" aria-label="Code, 0 of 4 digits"></div>
+      <p class="sheet__msg" id="keypadMsg" role="alert"></p>
+      <!-- 0-9, backspace and enter are built in script.js -->
+      <div class="pad" id="pad"></div>
+    </div>
+  </div>
+
+  <!-- ===== Hints bottom sheet ===== -->
+  <div class="sheet" id="hintSheet" role="dialog" aria-modal="true" aria-labelledby="hintTitle" hidden>
+    <div class="sheet__panel">
+      <div class="sheet__head">
+        <h2 class="sheet__title" id="hintTitle">Assistance</h2>
+        <button class="sheet__close" id="hintClose" type="button" aria-label="Close hints">✕</button>
+      </div>
+      <ol class="hints" id="hintList"></ol>
+      <div class="reveal-wrap" id="revealWrap" hidden>
+        <button class="btn btn--ghost" id="revealBtn" type="button">Reveal digits</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Success ===== -->
+  <div class="success" id="success" role="dialog" aria-modal="true" aria-labelledby="successFrom" hidden>
+    <div class="success__panel">
+      <p class="success__from" id="successFrom">The Examiner</p>
+      <p class="success__msg" id="successMsg">Hm. Impressive. One department down.</p>
+      <p class="success__slot">
+        <span class="success__letter" id="successLetter">A</span>
+        <span>filed to slot 3</span>
+      </p>
+      <a class="btn" id="nextBtn" href="/s2-k7q/">Next Department</a>
+    </div>
+  </div>
+
+  <span class="flash" id="flash" aria-hidden="true"></span>
+
+  <p class="sr-only" id="status" role="status" aria-live="polite"></p>
+
+  <script type="module" src="/s1-corridor/script.js"></script>
+</body>
+</html>
