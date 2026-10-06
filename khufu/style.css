@@ -1,0 +1,57 @@
+/* khufu/style.css — the removed-page (410) screen.
+   Builds on the tokens in /shared/style.css. Mobile-first (designed for
+   360x640 up to 390x844), touch-only, no hover-dependent behaviour.
+   Honours prefers-reduced-motion: the glitch flicker is disabled for motion-
+   sensitive users. */
+
+:root { --actbar-space: 84px; }
+
+/* Never scroll sideways on any device */
+html, body { overflow-x: hidden; }
+
+/* Safe centring: centres when it fits, 0 when it would overflow */
+.nf { justify-content: flex-start; }
+.nf__inner {
+  width: 100%; max-width: 520px; margin: auto 0;
+  display: flex; flex-direction: column; align-items: center; gap: 14px;
+  padding-bottom: calc(20px + var(--actbar-space));
+}
+
+/* ===== Glitching 410 headline ===== */
+.nf__code {
+  margin: 0; text-align: center;
+  font-size: clamp(2.1rem, 11vw, 3.6rem); font-weight: 800;
+  line-height: 1.1; letter-spacing: .03em; color: var(--cream);
+  text-shadow: 0 0 10px rgba(57, 255, 20, .4), 0 0 24px rgba(90, 150, 255, .3);
+  /* Subtle glitch: a soft pulse on the neon shadow + a brief horizontal
+     jitter every few seconds. Never motion-sick: 8-second cycle, 1px shifts. */
+  animation: glitchFlicker 8s linear infinite;
+}
+@keyframes glitchFlicker {
+  0%, 13%, 20%, 27% { text-shadow: 0 0 10px rgba(57, 255, 20, .4), 0 0 24px rgba(90, 150, 255, .3); transform: translateX(0); }
+  14%, 21% { text-shadow: 0 0 20px rgba(255, 90, 90, .5), 0 0 32px rgba(255, 90, 90, .4); transform: translateX(-1px); }
+  28% { text-shadow: 0 0 20px rgba(57, 255, 20, .3), 0 0 32px rgba(57, 255, 20, .25); transform: translateX(1px); }
+}
+
+.nf__rule { width: 64px; height: 2px; margin: 0; border-radius: 2px; background: var(--neon); }
+
+.nf__from {
+  margin: 0; font-size: .74rem; letter-spacing: .32em;
+  text-transform: uppercase; color: var(--neon);
+}
+.nf__taunt {
+  margin: 0; max-width: 34ch; text-align: center;
+  font-size: clamp(1rem, 4.2vw, 1.2rem); line-height: 1.5; color: var(--cream);
+}
+.nf__taunt::before { content: "\201C"; }
+.nf__taunt::after { content: "\201D"; }
+
+.nf__note {
+  margin: 6px 0 0; max-width: 32ch;
+  font-size: .8rem; line-height: 1.5; color: var(--cream-dim);
+}
+
+/* ===== Reduced motion: keep the glow static, drop every animation ===== */
+@media (prefers-reduced-motion: reduce) {
+  .nf__code { animation: none; text-shadow: 0 0 10px rgba(57, 255, 20, .4), 0 0 24px rgba(90, 150, 255, .3); transform: none; }
+}

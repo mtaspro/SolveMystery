@@ -151,8 +151,20 @@ const en = {
   // ---- hints (stage 4) ----
   'hints.s4.1': 'Listen to the whole announcement. Tap the transcript if you can\'t hear it.',
   'hints.s4.2': 'The encyclopedia is Wikipedia. Look up the Great Pyramid of Giza.',
-  'hints.s4.3': 'Read the first paragraph: whose tomb was it built for? That name is the next address. ' +
-    'Type it right after the site name.'
+   'hints.s4.3': 'Read the first paragraph: whose tomb was it built for? That name is the next address. ' +
+    'Type it right after the site name.',
+
+  // ---- stage 5: removed page (410) ----
+  'removed.code': '410 - PAGE REMOVED',
+  'removed.message': 'This page has been deleted by the administrator.',
+  'removed.lastSeen': 'Last seen: a few days ago',
+  'removed.waybackButton': 'Open Wayback Machine',
+
+  // ---- hints (stage 5) ----
+  'hints.s5.1': 'Pages that vanish are sometimes remembered by the internet.',
+  'hints.s5.2': 'Search for the internet\'s time machine. It is run by archive.org and called the Wayback Machine.',
+  'hints.s5.3': 'Look up this page\'s old address (/khufu) in the Wayback Machine and read the saved copy. ' +
+    'What it says is the next address.'
 };
 
 export const STRINGS = {

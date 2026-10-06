@@ -26,6 +26,11 @@ export const CONFIG = {
     // Stage 4 — the canteen.
     s4: {
       hints: ['hints.s4.1', 'hints.s4.2', 'hints.s4.3']
+    },
+
+    // Stage 5 — the deleted page (410 / PAGE REMOVED).
+    s5: {
+      hints: ['hints.s5.1', 'hints.s5.2', 'hints.s5.3']
     }
   }
 };

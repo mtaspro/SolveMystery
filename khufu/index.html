@@ -2,193 +2,37 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Staff Intranet - Confidential Memorandum</title>
-  <style>
-    /* Circa-2009 school intranet page. Pure static HTML + inline CSS so the
-       Internet Archive can replay it with zero dependencies. No scripts,
-       no external resources. 2009-era beige intranet aesthetic. */
-
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-
-    html { -webkit-text-size-adjust: 100%; }
-
-    body {
-      font-family: Georgia, "Times New Roman", Times, serif;
-      background: #f5ecd8;
-      color: #2b2b2b;
-      line-height: 1.6;
-      font-size: 18px;
-      padding: 0;
-      margin: 0;
-      overflow-x: hidden;
-      /* Subtle paper texture via two CSS gradients — one fine, one coarse */
-      background-image:
-        radial-gradient(rgba(139,69,19,0.04) 1px, transparent 1px),
-        radial-gradient(rgba(255,255,255,0.15) 1px, transparent 2px);
-      background-size: 22px 22px, 8px 8px;
-      background-position: 0 0, 3px 3px;
-    }
-
-    /* ---- Thin blue header bar ---- */
-    .intranet-header {
-      background: #2a4a8f;
-      color: #fff;
-      font-family: "Times New Roman", Times, serif;
-      font-size: 16px;
-      font-weight: bold;
-      letter-spacing: 1px;
-      padding: 8px 14px;
-      text-align: center;
-      text-transform: uppercase;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
-    }
-
-    .container {
-      max-width: 640px;
-      margin: 0 auto;
-      padding: 18px 14px 28px;
-    }
-
-    /* ---- "Last updated" + visitor counter ---- */
-    .meta {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 13px;
-      color: #6a6a6a;
-      margin-bottom: 18px;
-      padding: 0 4px;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-    .meta .updated { font-style: italic; }
-    .counter {
-      background: #e8e0d0;
-      border: 1px solid #b8b0a0;
-      padding: 4px 12px;
-      border-radius: 3px;
-      font-family: "Courier New", Courier, monospace;
-      font-size: 12px;
-      letter-spacing: 0.5px;
-    }
-
-    /* ---- Memo box ---- */
-    .memo {
-      background: #fdf8ee;
-      border: 1px solid #d4c8a8;
-      border-left: 8px solid #2a4a8f;
-      border-radius: 4px;
-      padding: 22px 24px 18px;
-      position: relative;
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3),
-                  0 2px 8px rgba(0, 0, 0, 0.08);
-      margin-bottom: 10px;
-    }
-
-    /* ---- Rotated red "CONFIDENTIAL" stamp ---- */
-    .stamp {
-      position: absolute;
-      top: 14px;
-      right: 16px;
-      transform: rotate(22deg);
-      background: rgba(200, 0, 0, 0.12);
-      border: 2px solid rgba(200, 0, 0, 0.55);
-      border-radius: 50%;
-      width: 88px;
-      height: 88px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      font-family: "Times New Roman", Times, serif;
-      font-size: 11px;
-      font-weight: bold;
-      color: rgba(200, 0, 0, 0.85);
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      line-height: 1.15;
-      pointer-events: none;
-    }
-
-    .memo h1 {
-      font-size: 20px;
-      font-weight: bold;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 16px;
-      color: #2b2b2b;
-      border-bottom: 1px dashed #b8b0a0;
-      padding-bottom: 6px;
-    }
-
-    .memo .field {
-      font-size: 16px;
-      margin-bottom: 6px;
-    }
-    .memo .field strong { font-weight: bold; }
-
-    .memo .body-text {
-      font-size: 17px;
-      line-height: 1.7;
-      margin: 14px 0;
-    }
-
-    .memo .body-text p {
-      margin-bottom: 12px;
-      text-align: left;
-    }
-
-    .memo .signature { margin-top: 18px; font-size: 15px; }
-
-    /* ---- Fine print ---- */
-    .fine-print {
-      font-size: 12px;
-      color: #7a7a7a;
-      font-style: italic;
-      margin-top: 14px;
-      padding-top: 8px;
-      border-top: 1px solid #d4c8a8;
-    }
-
-    @media (max-width: 380px) {
-      .memo { padding: 18px 18px 14px; }
-      .memo h1 { font-size: 18px; }
-      .memo .body-text { font-size: 16px; line-height: 1.65; }
-      .stamp { top: 10px; right: 10px; width: 72px; height: 72px; font-size: 9px; }
-    }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0b1020">
+  <title>410 - Page Removed</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20100%20100'%3E%3Ctext%20y='.9em'%20font-size='90'%3E%F0%9F%94%8E%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/shared/style.css">
+  <link rel="stylesheet" href="/khufu/style.css">
+  <link rel="stylesheet" href="/shared/hints.css">
 </head>
 <body>
-  <div class="intranet-header">GREENFIELD SCHOOL - Staff Intranet</div>
+  <main class="screen nf" id="scene" tabindex="-1">
+    <div class="nf__inner">
 
-  <div class="container">
+      <!-- ===== Glitching 410 headline ===== -->
+      <h1 class="nf__code" id="pageCode" data-i18n="removed.code">410 - PAGE REMOVED</h1>
 
-    <div class="meta">
-      <span class="updated">Last updated: 03 Oct 2009</span>
-      <span class="counter">Visitors: 1,047 :: Page generated by IntranetGen v1.3.7</span>
+      <!-- ===== Message ===== -->
+      <p class="nf__taunt" id="pageMessage" data-i18n="removed.message">
+        This page has been deleted by the administrator.
+      </p>
+
+      <!-- ===== Last seen ===== -->
+      <p class="nf__note" id="lastSeen" data-i18n="removed.lastSeen">
+        Last seen: a few days ago
+      </p>
+
+      <!-- ===== Hints action bar + sheet are rendered by /shared/hints.js ===== -->
     </div>
+  </main>
 
-    <div class="memo">
-      <div class="stamp">CONFIDENTIAL</div>
+  <p class="sr-only" id="status" role="status" aria-live="polite"></p>
 
-      <h1>CONFIDENTIAL STAFF MEMO</h1>
-
-      <p class="field"><strong>From:</strong> E. Xaminer, Exam Controller</p>
-      <p class="field"><strong>To:</strong> All invigilators</p>
-      <p class="field"><strong>Re:</strong> Location of the results</p>
-
-      <div class="body-text">
-        <p>Colleagues, the results have been moved. The corridor, the library, the lab and the canteen have already been searched. The final location is the room where valuables are locked away. Five letters: V _ U _ T.</p>
-        <p>The address of that room is its name, in lowercase, after the site name.</p>
-        <p>NB: I will delete this page once you have read it.</p>
-        <p>P.S. Do not tell the candidates.</p>
-      </div>
-
-      <div class="signature">&mdash; E. Xaminer</div>
-    </div>
-
-    <p class="fine-print">This document is internal to Greenfield School staff only. Distribution outside the invigilation team is prohibited. The Exam Controller holds final authority on all results matters.</p>
-  </div>
+  <script type="module" src="/khufu/script.js"></script>
 </body>
 </html>
