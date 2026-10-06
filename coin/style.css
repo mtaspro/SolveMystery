@@ -1,0 +1,283 @@
+/* coin/style.css — the canteen order-display.
+   Builds on the dark tokens in /shared/style.css but dressed as a school
+   canteen "NOW SERVING" board: amber LED status strip, green speaker, a thin
+   progress line and a bar-equilizer that only animates while playing.
+   Mobile-first (designed for 360x640 up to 390x844), touch-only, and there are
+   NO hover effects anywhere — only :active feedback. prefers-reduced-motion is
+   honoured everywhere. Root-relative paths only. */
+
+/* ---- Canteen-local tokens ---- */
+:root {
+  --canteen-led: var(--neon);            /* green "lit" elements */
+  --canteen-amber: #ff9f1c;              /* warm amber for the order strip */
+  --canteen-amber-glow: rgba(255, 159, 18, .45);
+  --actbar-space: 84px;                  /* action bar + safe area, mirrors the other stages */
+}
+
+html, body { overflow-x: hidden; }       /* never scroll sideways */
+
+.canteen {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(14px, 4vw, 22px);
+  padding: calc(var(--gap) + var(--safe-top)) calc(var(--gap) + var(--safe-right))
+           calc(var(--gap) + var(--safe-bottom) + var(--actbar-space))
+           calc(var(--gap) + var(--safe-left));
+}
+
+/* ===== Header + status strip ===== */
+.canteen__head { width: 100%; text-align: center; }
+
+.canteen__title {
+  margin: 0;
+  font-family: ui-monospace, "SFMono-Regular", Consolas, "Courier New", monospace;
+  font-size: clamp(1rem, 4vw, 1.2rem);
+  letter-spacing: .14em; text-transform: uppercase;
+  color: var(--neon);
+  text-shadow: 0 0 8px var(--neon), 0 0 18px rgba(57, 255, 20, .35);
+}
+
+.canteen__status {
+  margin: .4rem auto 0;
+  padding: .55rem 1rem;
+  font-family: ui-monospace, "SFMono-Regular", Consolas, "Courier New", monospace;
+  font-size: .8rem; letter-spacing: .12em; text-transform: uppercase;
+  color: #ffd49e;
+  background: rgba(11, 16, 32, .7);
+  border: 1px solid var(--canteen-amber-glow);
+  border-radius: 8px;
+  box-shadow: 0 0 10px var(--canteen-amber-glow), inset 0 0 14px rgba(0, 0, 0, .5);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+/* ===== Main: speaker stack ===== */
+.canteen__main {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: clamp(16px, 5vw, 22px);
+  width: 100%;
+}
+
+.speaker-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(10px, 3vw, 14px);
+  width: 100%;
+}
+
+/* ----- Round speaker button (>= 96px) ----- */
+.speaker {
+  --d: clamp(96px, 28vw, 130px);
+  width: var(--d); height: var(--d);
+  border-radius: 50%;
+  display: grid; place-items: center;
+  background: radial-gradient(135% 135% at 30% 30%, #18244a 0%, #0b1020 64%);
+  border: 3px solid var(--panel);
+  box-shadow: 0 0 0 6px rgba(57, 255, 20, .08), 0 8px 34px rgba(0, 0, 0, .6);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent; touch-action: manipulation;
+  transition: box-shadow .18s ease, filter .12s ease;
+}
+.speaker::before {
+  content: ""; position: absolute; inset: 18%; border-radius: 50%;
+  border: 2px solid rgba(57, 255, 20, .08);
+}
+.speaker__icon { display: grid; place-items: center; }
+.speaker__svg { width: min(56px, 14vw); height: auto; }
+.speaker__wave { color: var(--cream-dim); opacity: .74; }
+.speaker__cone { color: var(--canteen-led); filter: drop-shadow(0 0 6px var(--canteen-led)); }
+.speaker:active { filter: brightness(.88); }
+.speaker:focus-visible { outline: 3px solid var(--cream); outline-offset: 4px; }
+
+/* Speaker glows green while the announcement is playing. */
+.speaker.is-playing {
+  box-shadow: 0 0 0 6px rgba(57, 255, 20, .14), 0 0 28px var(--neon-soft),
+              inset 0 0 26px rgba(57, 255, 20, .12);
+}
+.speaker.is-playing .speaker__cone { color: var(--neon); opacity: 1; }
+
+/* ----- Label under the speaker ----- */
+.speaker__label {
+  margin: 0;
+  font-family: ui-monospace, "SFMono-Regular", Consolas, "Courier New", monospace;
+  font-size: clamp(.95rem, 3.2vw, 1.05rem);
+  font-weight: 700; letter-spacing: .04em;
+  color: var(--cream);
+  text-align: center; min-height: 1.3em;
+}
+
+/* ----- Equalizer (bar waveform), visible only while playing ----- */
+.equalizer {
+  display: inline-flex; align-items: flex-end; gap: 4px;
+  height: 26px; opacity: 0; pointer-events: none;
+  transition: opacity .2s ease, transform .2s ease;
+  transform: scale(.96);
+}
+.equalizer.is-visible { opacity: 1; transform: scale(1); }
+.equalizer i {
+  width: 6px; border-radius: 3px;
+  background: var(--canteen-led);
+  box-shadow: 0 0 8px var(--canteen-led);
+  transform-origin: bottom;
+  animation: eq 0.85s ease-in-out infinite alternate;
+  animation-play-state: paused;
+}
+.equalizer.is-visible i { animation-play-state: running; }
+.equalizer i:nth-child(1)  { height: 10px; }
+.equalizer i:nth-child(2)  { height: 19px; }
+.equalizer i:nth-child(3)  { height: 14px; }
+.equalizer i:nth-child(4)  { height: 23px; }
+.equalizer i:nth-child(5)  { height: 11px; }
+.equalizer i:nth-child(6)  { height: 20px; }
+.equalizer i:nth-child(7)  { height: 8px; }
+.equalizer i:nth-child(8)  { height: 25px; }
+.equalizer i:nth-child(9)  { height: 16px; }
+.equalizer i:nth-child(10) { height: 21px; }
+.equalizer i:nth-child(1) { animation-delay:   0ms; }
+.equalizer i:nth-child(2) { animation-delay:  70ms; }
+.equalizer i:nth-child(3) { animation-delay: 140ms; }
+.equalizer i:nth-child(4) { animation-delay: 210ms; }
+.equalizer i:nth-child(5) { animation-delay: 280ms; }
+.equalizer i:nth-child(6) { animation-delay: 350ms; }
+.equalizer i:nth-child(7) { animation-delay: 420ms; }
+.equalizer i:nth-child(8) { animation-delay: 490ms; }
+.equalizer i:nth-child(9) { animation-delay: 560ms; }
+.equalizer i:nth-child(10){ animation-delay: 630ms; }
+
+@keyframes eq {
+  0%   { transform: scaleY(.55); }
+  50%  { transform: scaleY(1); }
+  100% { transform: scaleY(.45); }
+}
+
+/* ----- Progress bar (thin line) ----- */
+.progress-row {
+  display: flex; align-items: center; gap: 8px; width: 100%; max-width: 340px;
+}
+.progress {
+  flex: 1; height: 6px; border-radius: 3px;
+  background: rgba(243, 234, 214, .12); overflow: hidden;
+}
+.progress__fill {
+  height: 100%; width: 0%; border-radius: 3px;
+  background: linear-gradient(90deg, var(--neon), var(--neon-soft));
+  transition: width .08s linear;
+}
+.time {
+  font-family: ui-monospace, "SFMono-Regular", Consolas, "Courier New", monospace;
+  font-size: .72rem; letter-spacing: .05em; white-space: nowrap; color: var(--cream-dim);
+}
+
+/* ===== Playback-speed toggle ===== */
+.cbtn {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-height: var(--tap); min-width: min(280px, 80vw);
+  padding: .8rem 1.5rem;
+  font: inherit; font-size: 1rem; font-weight: 700; letter-spacing: .02em;
+  color: var(--navy); background: var(--neon);
+  border: 2px solid var(--neon); border-radius: var(--radius);
+  cursor: pointer; -webkit-tap-highlight-color: transparent; touch-action: manipulation;
+  transition: transform .12s ease, box-shadow .12s ease, filter .12s ease;
+}
+.cbtn:active { transform: translateY(1px) scale(.99); filter: brightness(.9); }
+.cbtn:focus-visible { outline: 3px solid var(--cream); outline-offset: 3px; }
+
+.cbtn--slow {
+  min-width: 96px; padding: .52rem 1.1rem; font-size: .85rem;
+  color: var(--cream-dim); background: transparent;
+  border-color: rgba(243, 234, 214, .28);
+}
+.cbtn--slow:active { filter: brightness(.8); }
+.cbtn--slow.is-active {
+  color: var(--neon); border-color: var(--canteen-led);
+  box-shadow: 0 0 10px var(--neon-soft);
+}
+
+/* ===== Error + transcript ===== */
+.canteen__error {
+  margin: 0 auto; max-width: 520px; width: min(520px, 90vw);
+  padding: .8rem 1rem; text-align: center; font-size: .9rem;
+  color: #ffd7d7;
+  background: rgba(139, 0, 0, .24);
+  border: 1px solid rgba(255, 90, 90, .38); border-radius: 8px;
+  box-shadow: 0 0 12px rgba(255, 90, 90, .24);
+}
+
+/* ===== Transcript card ===== */
+.transcript {
+  width: min(520px, 90vw); margin: 0 auto;
+  padding: 14px 16px;
+  background: var(--panel); border: 1px solid rgba(243, 234, 214, .18);
+  border-radius: 10px;
+}
+.transcript__title {
+  margin: 0 0 8px; padding: 0;
+  font-family: ui-monospace, "SFMono-Regular", Consolas, "Courier New", monospace;
+  font-size: .72rem; letter-spacing: .18em; text-transform: uppercase;
+  color: var(--cream-dim);
+}
+.transcript__body {
+  font-size: .95rem; line-height: 1.5; color: var(--cream);
+}
+.transcript__body p { margin: 0 0 .6em; }
+.transcript__body p:last-child { margin-bottom: 0; }
+
+/* ===== Intro overlay ===== */
+.overlay {
+  position: fixed; inset: 0; z-index: 200;
+  display: grid; place-items: center;
+  padding: calc(24px + var(--safe-top)) 20px calc(24px + var(--safe-bottom));
+  background: radial-gradient(120% 90% at 50% 0%, #101a36 0%, #070b16 70%);
+  transition: opacity .35s ease, visibility .35s ease;
+}
+.overlay.is-hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+.overlay__card {
+  width: min(460px, 100%); display: grid; gap: clamp(16px, 5vw, 24px);
+  justify-items: center; text-align: center;
+}
+.overlay__from {
+  margin: 0;
+  font-family: ui-monospace, "SFMono-Regular", Consolas, "Courier New", monospace;
+  font-size: .7rem; letter-spacing: .28em; text-transform: uppercase; color: var(--neon);
+}
+.overlay__text {
+  margin: 0; min-height: 5em;
+  font-size: clamp(1.1rem, 5.2vw, 1.5rem); line-height: 1.4; color: var(--cream);
+}
+.caret {
+  display: inline-block; width: .55ch; height: 1em; margin-left: 2px;
+  vertical-align: -.12em; background: var(--neon);
+  animation: blink 1s steps(1) infinite;
+}
+@keyframes blink { 50% { opacity: 0; } }
+.overlay .cbtn { opacity: 0; visibility: hidden; transition: opacity .25s ease, visibility .25s ease; }
+.overlay.is-ready .cbtn { opacity: 1; visibility: visible; }
+
+/* ===== Off-screen audio (preloaded for metadata) ===== */
+.pa-offscreen { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+
+/* ===== Reduced motion: keep the states, drop the animation ===== */
+@media (prefers-reduced-motion: reduce) {
+  .caret { animation: none; }
+  .equalizer i { animation: none; }
+  .speaker, .speaker__svg, .progress__fill, .equalizer,
+  .overlay, .cbtn { transition: none; }
+}
+
+/* ===== "Show transcript" toggle (ghost style) ===== */
+.cbtn--ghost {
+  min-width: min(280px, 80vw);
+  color: var(--cream); background: transparent;
+  border-color: rgba(243, 234, 214, .28);
+}
+.cbtn--ghost:active { filter: brightness(.85); }
+.cbtn--ghost.is-active {
+  color: var(--neon); border-color: var(--canteen-led);
+  box-shadow: 0 0 10px var(--neon-soft);
+}

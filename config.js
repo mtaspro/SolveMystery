@@ -21,6 +21,11 @@ export const CONFIG = {
     // Stage 3 — the Science Lab CCTV archive.
     s3: {
       hints: ['hints.s3.1', 'hints.s3.2', 'hints.s3.3']
+    },
+
+    // Stage 4 — the canteen.
+    s4: {
+      hints: ['hints.s4.1', 'hints.s4.2', 'hints.s4.3']
     }
   }
 };
