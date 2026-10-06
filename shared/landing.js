@@ -1,35 +1,45 @@
 // shared/landing.js — landing page: the typewriter message and its Skip button.
 // Plain ES module, no build step. Touch-first: everything is a tap/click.
+//
+// The message is typed one GRAPHEME at a time by the shared typewriter, so
+// Bengali conjuncts never break when the page is switched to bn.
 
-const MESSAGE = 'Your results have been relocated. I have hidden them across the internet. '
-  + 'Each door has an address. The address is the answer. Solve the clue, find the next door.';
+import { t, applyI18n, mountLangToggle, onLangChange } from '/shared/i18n.js';
+import { typewriter } from '/shared/ui.js';
+
 const CHAR_MS = 50; // ~163 characters => the message lands in about 8 seconds
 
-const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 const typed = document.getElementById('examTyped');
 const text = document.getElementById('examText');
 const skipBtn = document.getElementById('skipBtn');
 
-let i = 0;
-let timer = 0;
+let typing = null;
 
-// Jump straight to the finished message and retire the caret + Skip.
-function finish() {
-  clearInterval(timer);
-  timer = 0;
-  text.textContent = MESSAGE;
-  typed.classList.add('is-done');
-  skipBtn.disabled = true;
+// Start (or restart) the message. Re-running it is what makes a language change
+// possible: the helper holds the text it was given, so a new language needs a
+// new run.
+function startTyping() {
+  typing = typewriter(text, t('landing.message'), CHAR_MS, {
+    // Fires when the message finishes on its own AND when Skip jumps to the end.
+    onDone: () => {
+      typed.classList.add('is-done');   // retires the caret
+      skipBtn.disabled = true;
+    }
+  });
+  return typing;
 }
 
-function start() {
-  if (reduceMotion.matches) { finish(); return; } // no typing animation
-  timer = setInterval(() => {
-    i += 1;
-    text.textContent = MESSAGE.slice(0, i);
-    if (i >= MESSAGE.length) finish();
-  }, CHAR_MS);
-}
+skipBtn.addEventListener('click', () => { if (typing) typing.finish(); });
 
-skipBtn.addEventListener('click', finish);
-start();
+// Static copy first, then the toggle (which calls applyI18n() when clicked), then
+// the typing. A language change repaints the page and shows the whole message
+// again straight away, rather than replaying the animation.
+onLangChange(() => {
+  applyI18n();
+  if (typing) typing.stop();
+  startTyping().finish();
+});
+
+applyI18n();
+mountLangToggle();
+startTyping();

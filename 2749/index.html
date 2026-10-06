@@ -6,6 +6,7 @@
   <meta name="theme-color" content="#0b1020">
   <meta name="robots" content="noindex">
   <title>Stage 2 — The Library</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20100%20100'%3E%3Ctext%20y='.9em'%20font-size='90'%3E%F0%9F%94%AD%3C/text%3E%3C/svg%3E">
   <link rel="stylesheet" href="/shared/style.css">
   <link rel="stylesheet" href="/2749/style.css">
   <link rel="stylesheet" href="/shared/hints.css">
@@ -15,10 +16,10 @@
     <!-- ===== Catalog header. The site name is rendered from SITE.name in
          /2749/script.js; the copy below is only a no-JS fallback. ===== -->
     <header class="cat">
-      <p class="cat__crest" aria-hidden="true">Est. 1974 &nbsp;·&nbsp; Non-circulating after hours</p>
+      <p class="cat__crest" aria-hidden="true" data-i18n="library.crest">Est. 1974 &nbsp;·&nbsp; Non-circulating after hours</p>
       <h1 class="cat__title">
         <span id="siteName">Greenfield School Library</span>
-        <span class="cat__title-sub">Online Catalog</span>
+        <span class="cat__title-sub" data-i18n="library.subtitle">Online Catalog</span>
       </h1>
 
       <!-- Decorative only: the catalogue search was decommissioned, so this is
@@ -28,12 +29,12 @@
           <circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="2"/>
           <line x1="15.4" y1="15.4" x2="21" y2="21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
         </svg>
-        <span class="cat-search__field">Search by title, author or subject</span>
-        <span class="cat-search__go">Search</span>
+        <span class="cat-search__field" data-i18n="library.searchPlaceholder">Search by title, author or subject</span>
+        <span class="cat-search__go" data-i18n="library.searchButton">Search</span>
       </div>
 
       <p class="cat__acct">
-        <span class="cat__acct-label">Account:</span>
+        <span class="cat__acct-label" data-i18n="library.accountLabel">Account:</span>
         <span id="acctName">E. XAMINER</span>
         <span class="cat__acct-sep">-</span>
         <span id="acctDue">5 items overdue</span>
@@ -43,7 +44,7 @@
     <main class="lib__main">
       <!-- ===== The shelf. Two rows of four spines, built from BOOKS in script.js. ===== -->
       <div class="shelf" id="shelf"></div>
-      <p class="lib__hint">Tap a spine to check its borrowing record.</p>
+      <p class="lib__hint" data-i18n="library.shelfHint">Tap a spine to check its borrowing record.</p>
     </main>
   </div>
 
@@ -53,16 +54,16 @@
       <p class="modal__eyebrow" id="bookEyebrow"></p>
       <h2 class="modal__title" id="bookTitle"></h2>
       <div class="stamp" id="bookStamp"></div>
-      <button class="cat-btn" id="bookClose" type="button">Close</button>
+      <button class="cat-btn" id="bookClose" type="button" data-i18n="common.close">Close</button>
     </div>
   </div>
 
   <!-- ===== Intro overlay: a note from The Examiner ===== -->
   <div class="intro" id="intro">
     <div class="intro__card">
-      <p class="intro__from">A note from The Examiner</p>
+      <p class="intro__from" data-i18n="library.introFrom">A note from The Examiner</p>
       <p class="intro__text" id="introText"></p>
-      <button class="cat-btn cat-btn--solid" id="beginBtn" type="button">Begin</button>
+      <button class="cat-btn cat-btn--solid" id="beginBtn" type="button" data-i18n="common.begin">Begin</button>
     </div>
   </div>
 

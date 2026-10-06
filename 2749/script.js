@@ -7,6 +7,8 @@
 
 import { CONFIG } from '/config.js';
 import { initHints } from '/shared/hints.js';
+import { t, tf, applyI18n, mountLangToggle, onLangChange } from '/shared/i18n.js';
+import { typewriter } from '/shared/ui.js';
 
 const STAGE = 's2';                 // this page's stage id in CONFIG
 
@@ -14,16 +16,14 @@ const STAGE = 's2';                 // this page's stage id in CONFIG
 // EDIT HERE
 // ---------------------------------------------------------------------------
 
-// One constant for the site name (and the other catalogue chrome).
+// One constant for the site name (and the account holder). Subtitles, intros
+// and labels all live in /shared/strings.js so the toggle can switch them.
 const SITE = {
   name: 'Greenfield School Library',
-  subtitle: 'Online Catalog',
   account: 'E. XAMINER',
-  intro: 'Some books were never returned. Return them in order. Then be quiet.',
 };
 
-// The shelf, in the order they stand on it. `overdue: false` books carry no
-// `due` date — they were returned on time and have nothing to contribute.
+// Titles stay English on purpose (the puzzle depends on their initials).
 const BOOKS = [
   { title: 'Halfway to Midnight',               overdue: true,  due: '17 Oct' },
   { title: 'A Brief History of Canteen Queues', overdue: false, due: '' },
@@ -66,13 +66,18 @@ function say(msg) { status.textContent = ''; status.textContent = msg; }
 // --- header: fill in the one editable constant (the HTML copy is a fallback) ---
 document.getElementById('siteName').textContent = SITE.name;
 document.getElementById('acctName').textContent = SITE.account;
-document.title = SITE.name + ' - ' + SITE.subtitle;
+document.title = SITE.name + ' - ' + t('library.subtitle');
 
 // Count the overdue books from the data itself, so the strip can never disagree
 // with the shelf if you edit BOOKS above.
 const overdueCount = BOOKS.filter((b) => b.overdue).length;
-document.getElementById('acctDue').textContent =
-  overdueCount + (overdueCount === 1 ? ' item overdue' : ' items overdue');
+document.getElementById('acctDue').textContent = tf(
+  overdueCount === 1 ? 'library.itemOverdue' : 'library.itemsOverdue',
+  { n: overdueCount }
+);
+
+// --- state ---
+let currentBookIndex = null;  // which book's modal is currently open
 
 // --- the shelf ---
 const seen = new Set();     // indexes of books already opened
@@ -81,8 +86,8 @@ let closeTimer = null;
 
 function describe(book) {
   return book.overdue
-    ? book.title + '. Overdue, due ' + book.due + '.'
-    : book.title + '. Returned on time.';
+    ? tf('library.spineOverdue', { title: book.title, due: book.due })
+    : tf('library.spineReturned', { title: book.title });
 }
 
 function renderShelf() {
@@ -107,7 +112,7 @@ function renderShelf() {
       if (book.overdue) {
         const tag = document.createElement('span');
         tag.className = 'spine__tag';
-        tag.textContent = 'OVERDUE';
+        tag.textContent = t('library.overdueTag');
         spine.appendChild(tag);
       }
 
@@ -125,10 +130,11 @@ function renderShelf() {
 }
 // --- book record dialog ---
 function openBook(index, spine) {
+  currentBookIndex = index;
   const book = BOOKS[index];
-  const stampText = book.overdue ? 'DUE: ' + book.due : 'Returned on time';
+  const stampText = book.overdue ? tf('library.stampDue', { due: book.due }) : t('library.returnedOnTime');
 
-  bookEyebrow.textContent = book.overdue ? 'Overdue item' : 'Borrowing record';
+  bookEyebrow.textContent = book.overdue ? t('library.overdueItem') : t('library.borrowingRecord');
   bookTitle.textContent = book.title;
   bookStamp.textContent = stampText;
   bookStamp.className = 'stamp ' + (book.overdue ? 'stamp--due' : 'stamp--ok');
@@ -153,6 +159,7 @@ function closeBook() {
     modal.hidden = true;
     modal.classList.remove('is-closing');
     closeTimer = null;
+    currentBookIndex = null;
   };
   if (prefersReducedMotion.matches) hide();   // no fade when reduced
   else closeTimer = setTimeout(hide, 180);
@@ -165,41 +172,30 @@ modal.addEventListener('click', (e) => { if (e.target === modal) closeBook(); })
 document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeBook(); });
 
 // --- intro: typewriter + dismiss ---
-let typer = null;      // interval id while typing
-let failsafe = null;   // safety net so the Begin button always appears
+let typing = null;      // typewriter handle while typing
+let failsafe = null;    // safety net so the Begin button always appears
+let introDone = false;  // guards finishIntro against re-entry from onDone
 
-const caret = document.createElement('span');
-caret.className = 'caret';
-caret.setAttribute('aria-hidden', 'true');
-
-// Show the first `n` characters, with the blinking caret after them.
-function setTyped(n) {
-  introText.textContent = '';
-  introText.append(document.createTextNode(SITE.intro.slice(0, n)), caret);
-}
-
-function startIntro() {
-  if (prefersReducedMotion.matches) { finishTyping(); return; }   // no typing animation
-  let i = 0;
-  setTyped(0);
-  typer = setInterval(() => {
-    i += 1;
-    setTyped(i);
-    if (i >= SITE.intro.length) finishTyping();
-  }, 42);
-  failsafe = setTimeout(finishTyping, 7000);
-}
-
-function finishTyping() {
-  if (typer) { clearInterval(typer); typer = null; }
+function finishIntro() {
+  if (introDone) return;
+  introDone = true;
   if (failsafe) { clearTimeout(failsafe); failsafe = null; }
-  introText.textContent = SITE.intro;      // also drops the caret
+  if (typing) { typing.finish(); typing = null; }
+  introText.classList.remove('is-typing');
   intro.classList.add('is-ready');         // reveal the Begin button
   beginBtn.focus({ preventScroll: true });
 }
 
+function startIntro() {
+  introDone = false;
+  introText.classList.add('is-typing');
+  failsafe = setTimeout(finishIntro, 7000);
+  typing = typewriter(introText, t('library.intro'), 42, { onDone: finishIntro });
+  return typing;
+}
+
 function dismissIntro() {
-  if (typer) { clearInterval(typer); typer = null; }
+  if (typing) { typing.stop(); typing = null; }
   if (failsafe) { clearTimeout(failsafe); failsafe = null; }
   intro.classList.add('is-hidden');
   const hide = () => { intro.hidden = true; };
@@ -216,6 +212,39 @@ beginBtn.addEventListener('click', dismissIntro);
 // to reveal beyond the text, so the onAllUnlocked slot stays empty.
 initHints({ hints: CONFIG.stages[STAGE].hints });
 
+// --- language change: re-render dynamic text without a reload ---
+onLangChange(() => {
+  applyI18n();
+  // Account strip
+  document.getElementById('acctDue').textContent = tf(
+    overdueCount === 1 ? 'library.itemOverdue' : 'library.itemsOverdue',
+    { n: overdueCount }
+  );
+  // Spine aria-labels
+  shelf.querySelectorAll('.spine').forEach((spine, index) => {
+    spine.setAttribute('aria-label', describe(BOOKS[index]));
+  });
+  // Spine tags
+  shelf.querySelectorAll('.spine__tag').forEach((tag) => {
+    tag.textContent = t('library.overdueTag');
+  });
+  // Intro: if still showing, jump to full text in the new language.
+  if (!intro.hidden) {
+    if (typing) { typing.stop(); typing = null; }
+    if (failsafe) { clearTimeout(failsafe); failsafe = null; }
+    startIntro().finish();
+  }
+  // Modal: if open, re-render its content.
+  if (!modal.hidden && currentBookIndex !== null) {
+    const book = BOOKS[currentBookIndex];
+    const stampText = book.overdue ? tf('library.stampDue', { due: book.due }) : t('library.returnedOnTime');
+    bookEyebrow.textContent = book.overdue ? t('library.overdueItem') : t('library.borrowingRecord');
+    bookStamp.textContent = stampText;
+  }
+});
+
 // --- go ---
+applyI18n();
+mountLangToggle();
 renderShelf();
 startIntro();

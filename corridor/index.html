@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#0b1020">
   <title>Stage 1 — The Corridor</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20100%20100'%3E%3Ctext%20y='.9em'%20font-size='90'%3E%F0%9F%94%AD%3C/text%3E%3C/svg%3E">
   <link rel="stylesheet" href="/shared/style.css">
   <link rel="stylesheet" href="/corridor/style.css">
   <link rel="stylesheet" href="/shared/hints.css">
@@ -15,10 +16,10 @@
   <!-- ===== Intro overlay ===== -->
   <div class="overlay" id="intro" role="dialog" aria-modal="true" aria-labelledby="introFrom">
     <div class="overlay__card">
-      <p class="overlay__from" id="introFrom">The Examiner</p>
+      <p class="overlay__from" id="introFrom" data-i18n="common.from">The Examiner</p>
       <p class="overlay__text" id="introText" aria-hidden="true"><span id="typed"></span><span class="caret"></span></p>
-      <p class="sr-only">Candidates, your results have been relocated. Remain calm. Panic is permitted.</p>
-      <button class="btn" id="beginBtn" type="button">Begin</button>
+      <p class="sr-only" data-i18n="corridor.intro">Candidates, your results have been relocated. Remain calm. Panic is permitted.</p>
+      <button class="btn" id="beginBtn" type="button" data-i18n="common.begin">Begin</button>
     </div>
   </div>
 
@@ -28,7 +29,7 @@
       <!-- Back wall -->
       <div class="wall">
         <!-- Wall clock (inline SVG, no external image) -->
-        <div class="clock" role="img" aria-label="Wall clock, quarter past three">
+        <div class="clock" role="img" data-i18n-aria="corridor.clockLabel" aria-label="Wall clock, quarter past three">
           <svg class="clock__svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false">
             <circle class="clock__face" cx="50" cy="50" r="46"/>
             <g class="clock__ticks">
@@ -44,9 +45,9 @@
         </div>
 
         <!-- Noticeboard -->
-        <section class="noticeboard" aria-label="Noticeboard">
-          <article class="timetable" aria-label="Timetable">
-            <h2 class="timetable__title">Timetable</h2>
+        <section class="noticeboard" data-i18n-aria="corridor.noticeboard" aria-label="Noticeboard">
+          <article class="timetable" data-i18n-aria="corridor.timetable" aria-label="Timetable">
+            <h2 class="timetable__title" data-i18n="corridor.timetable">Timetable</h2>
             <ul class="timetable__list">
               <li class="timetable__row"><span class="timetable__slot">P1</span> Maths</li>
               <li class="timetable__row"><span class="timetable__slot">P2</span> Physics</li>
@@ -57,7 +58,7 @@
 
           <button class="sticky" id="stickyNote" type="button" aria-pressed="false">
             <span class="sticky__pin" aria-hidden="true"></span>
-            <span class="sticky__text">Don't trust the lights.</span>
+            <span class="sticky__text" data-i18n="corridor.stickyNote">Don't trust the lights.</span>
           </button>
         </section>
       </div>
@@ -98,10 +99,10 @@
     </div>
 
     <!-- Faint instruction, fades after the first drag -->
-    <p class="torch-hint" id="torchHint">Drag your finger to look around</p>
+    <p class="torch-hint" id="torchHint" data-i18n="corridor.torchHint">Drag your finger to look around</p>
 
     <!-- Wall light switch, bottom-right, 56px tap target -->
-    <button class="switch" id="lightSwitch" type="button" aria-pressed="true" aria-label="Light switch (lights on)">
+    <button class="switch" id="lightSwitch" type="button" aria-pressed="true" data-i18n-aria="corridor.switchOn" aria-label="Light switch (lights on)">
       <span class="switch__plate" aria-hidden="true"><span class="switch__rocker"></span></span>
     </button>
   </main>

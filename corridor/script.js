@@ -11,10 +11,11 @@
 
 import { CONFIG } from '/config.js';
 import { initHints } from '/shared/hints.js';
+import { t, applyI18n, mountLangToggle, onLangChange } from '/shared/i18n.js';
+import { typewriter } from '/shared/ui.js';
 
 const STAGE = 's1';                // this page's stage id in CONFIG
 const HINTS = CONFIG.stages[STAGE].hints;
-const INTRO_TEXT = "Candidates, your results have been relocated. Remain calm. Panic is permitted.";
 
 // Read the user's motion preference at call time so it stays live.
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -23,6 +24,7 @@ const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)
 const scene = document.getElementById('scene');
 const intro = document.getElementById('intro');
 const introText = document.getElementById('introText');
+const typed = document.getElementById('typed');
 const beginBtn = document.getElementById('beginBtn');
 const sticky = document.getElementById('stickyNote');
 const switchBtn = document.getElementById('lightSwitch');
@@ -39,37 +41,38 @@ function paint() {
   const dark = lights === Lights.OFF;
   scene.classList.toggle('dark', dark);
   switchBtn.setAttribute('aria-pressed', String(!dark));
-  switchBtn.setAttribute('aria-label', dark ? 'Light switch (lights off)' : 'Light switch (lights on)');
+  switchBtn.setAttribute('aria-label', dark ? t('corridor.switchOff') : t('corridor.switchOn'));
 }
 
 // Announce to the polite live region.
 function say(msg) { status.textContent = ''; status.textContent = msg; }
 
 // --- intro: typewriter + dismiss ---
-let typer = null;     // interval id while typing
-let failsafe = null;  // safety net so the Begin button always appears
+let typing = null;     // typewriter handle while typing
+let failsafe = null;   // safety net so the Begin button always appears
+let introDone = false; // guards finishIntro against re-entry from onDone
 
-function startIntro() {
-  if (prefersReducedMotion.matches) { finishTyping(); return; } // no typing animation
-  let i = 0;
-  typer = setInterval(() => {
-    i += 1;
-    introText.textContent = INTRO_TEXT.slice(0, i);
-    if (i >= INTRO_TEXT.length) finishTyping();
-  }, 45);
-  failsafe = setTimeout(finishTyping, 6000);
-}
-
-function finishTyping() {
-  if (typer) { clearInterval(typer); typer = null; }
+function finishIntro() {
+  if (introDone) return;
+  introDone = true;
   if (failsafe) { clearTimeout(failsafe); failsafe = null; }
-  introText.textContent = INTRO_TEXT;
+  if (typing) { typing.finish(); typing = null; }
   intro.classList.add('is-ready');            // reveal the Begin button
   beginBtn.focus({ preventScroll: true });
 }
 
+function startIntro() {
+  introDone = false;
+  typed.textContent = '';
+  const text = t('corridor.intro');
+  failsafe = setTimeout(finishIntro, 6000);
+  typing = typewriter(typed, text, 45, { onDone: finishIntro });
+  return typing;
+}
+
 function dismissIntro() {
-  if (typer) { clearInterval(typer); typer = null; }
+  if (typing) { typing.stop(); typing = null; }
+  if (failsafe) { clearTimeout(failsafe); failsafe = null; }
   intro.classList.add('is-hidden');
   const hide = () => { intro.hidden = true; };
   if (prefersReducedMotion.matches) hide();   // no fade when reduced
@@ -78,7 +81,7 @@ function dismissIntro() {
 }
 
 beginBtn.addEventListener('click', dismissIntro);
-introText.addEventListener('click', finishTyping); // tap the text to skip typing
+introText.addEventListener('click', () => { if (typing) typing.finish(); }); // tap the text to skip typing
 
 // --- sticky note: the first tap kills the power ---
 sticky.addEventListener('click', () => {
@@ -97,7 +100,7 @@ function powerCut() {
     lights = Lights.OFF;
     paint();
     busy = false;
-    say('The lights go out.');
+    say(t('corridor.lightsOut'));
   };
   if (prefersReducedMotion.matches) settle(); // jump straight to dark
   else setTimeout(settle, 600);
@@ -109,7 +112,7 @@ switchBtn.addEventListener('click', () => {
   if (!poweredDown) { wiggle(); return; }     // nothing happens yet
   lights = lights === Lights.OFF ? Lights.ON : Lights.OFF;
   paint();
-  say(lights === Lights.OFF ? 'The lights go out.' : 'The lights come back on.');
+  say(lights === Lights.OFF ? t('corridor.lightsOut') : t('corridor.lightsOn'));
 });
 
 function wiggle() {
@@ -117,7 +120,7 @@ function wiggle() {
   switchBtn.classList.remove('is-wiggling');
   void switchBtn.offsetWidth;                 // restart the CSS animation
   switchBtn.classList.add('is-wiggling');
-  say('The switch is dead.');
+  say(t('corridor.switchDead'));
 }
 switchBtn.addEventListener('animationend', () => switchBtn.classList.remove('is-wiggling'));
 
@@ -183,13 +186,13 @@ revealWrap.className = 'reveal-wrap';
 const revealBtn = document.createElement('button');
 revealBtn.type = 'button';
 revealBtn.className = 'btn btn--ghost';
-revealBtn.textContent = 'Reveal digits';
+revealBtn.textContent = t('corridor.revealButton');
 revealWrap.appendChild(revealBtn);
 
 let hintsApi = null;
 revealBtn.addEventListener('click', () => {
   scene.classList.add('revealed');            // all four digits stay lit for good
-  say('The digits are revealed.');
+  say(t('corridor.digitsRevealed'));
   if (hintsApi) hintsApi.closeSheet();
 });
 
@@ -198,6 +201,26 @@ hintsApi = initHints({
   onAllUnlocked: ({ foot }) => foot.appendChild(revealWrap),
 });
 
+// --- language change: re-render dynamic text without a reload ---
+onLangChange(() => {
+  applyI18n();
+  // Intro: if still showing, jump to the full text in the new language.
+  if (!intro.hidden) {
+    if (typing) { typing.stop(); typing = null; }
+    if (failsafe) { clearTimeout(failsafe); failsafe = null; }
+    typed.textContent = t('corridor.intro');
+    if (!intro.classList.contains('is-ready')) {
+      intro.classList.add('is-ready');
+      beginBtn.focus({ preventScroll: true });
+    }
+  }
+  // Dynamic text: switch aria-label, reveal button text.
+  paint();
+  revealBtn.textContent = t('corridor.revealButton');
+});
+
 // --- go ---
+applyI18n();
+mountLangToggle();
 paint();
 startIntro();

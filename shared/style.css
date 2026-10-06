@@ -25,7 +25,13 @@
 html { -webkit-text-size-adjust: 100%; }
 body {
   margin: 0;
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  /* No @font-face and no external font files: these are looked up on the
+     device and simply skipped when not installed. The Latin faces come first
+     so Latin text keeps the system look, then the Bengali faces, which only
+     get used for Bengali glyphs that the earlier entries do not cover. */
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto,
+               "Noto Sans Bengali", "Hind Siliguri",
+               "Helvetica Neue", Arial, sans-serif;
   background: radial-gradient(120% 90% at 50% 0%, #16203c 0%, var(--navy) 55%) fixed;
   color: var(--cream);
   line-height: 1.5;
@@ -113,6 +119,34 @@ body {
   border-radius: var(--radius);
 }
 .field:focus { border-color: var(--neon); outline: none; }
+
+/* ---- Language toggle: mounted by mountLangToggle() in /shared/i18n.js, so it
+   is shared chrome. Fixed top-right, above the action bar (20) and the hints
+   sheet (120), but clear of the intro overlay's Begin button and page header at
+   360x640 — the toggle sits at the very top, important content is centered lower.
+   z-index is set above all fullscreen overlays (intro: 200, zoom: 150, modal: 100)
+   so the button stays tappable at all times. ---- */
+.langtoggle {
+  position: fixed;
+  top: calc(8px + var(--safe-top));
+  right: calc(8px + var(--safe-right));
+  z-index: 250;
+  display: inline-flex; align-items: center; gap: 6px;
+  min-height: 44px;                        /* never below the 44px tap target */
+  min-width: 56px;
+  padding: 0 12px;
+  font: inherit; font-size: .8rem; font-weight: 700; letter-spacing: .04em;
+  color: var(--cream-dim);
+  background: rgba(20, 28, 51, .92);
+  border: 1px solid rgba(243, 234, 214, .22);
+  border-radius: 999px;
+  cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+  transition: transform .1s ease, background-color .1s ease;
+}
+.langtoggle:active { transform: translateY(1px); background: rgba(36, 48, 85, .95); }
+.langtoggle:focus-visible { outline: 3px solid var(--neon); outline-offset: 3px; }
+.langtoggle__sep { opacity: .4; }
+.langtoggle__opt.is-active { color: var(--neon); }
 
 /* ---- Utilities ---- */
 .sr-only {

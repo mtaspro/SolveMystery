@@ -1,0 +1,294 @@
+/* shush/style.css — Stage 3, the Science Lab CCTV archive.
+   Same dark theme tokens as /shared/style.css, but dressed as a security
+   monitor: monospace type, scanlines, a blinking REC badge and viewfinder
+   corner ticks.
+   Mobile-first (designed for 360x640 up), no hover-dependent behaviour
+   anywhere — only :active feedback. */
+
+/* The "Stuck?" action bar from /shared/hints.js is fixed to the bottom of the
+   viewport, so the last row of page content has to clear it: 10px bar padding
+   + 56px tap target + the safe-area inset. */
+:root { --actbar-space: 84px; }
+
+/* ===== Page shell ===== */
+.lab {
+  min-height: 100vh;                     /* fallback for older browsers */
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(12px, 3.5vw, 18px);
+  padding: calc(12px + var(--safe-top)) calc(12px + var(--safe-right))
+           calc(18px + var(--safe-bottom) + var(--actbar-space)) calc(12px + var(--safe-left));
+}
+
+/* ===== CCTV archive header ===== */
+.cctv { display: grid; gap: 7px; justify-items: center; text-align: center; }
+
+.cctv__rec {
+  margin: 0; display: inline-flex; align-items: center; gap: 7px;
+  padding: 3px 10px; border-radius: 999px;
+  background: rgba(179, 38, 30, .18);
+  border: 1px solid rgba(255, 120, 120, .38);
+  font-family: ui-monospace, "SFMono-Regular", Consolas, "Courier New", monospace;
+  font-size: .62rem; font-weight: 700; letter-spacing: .22em; line-height: 1.4;
+  color: #ff8d80;
+}
+.cctv__dot {
+  width: 8px; height: 8px; flex: none; border-radius: 50%;
+  background: #ff4d4d;
+  box-shadow: 0 0 8px rgba(255, 77, 77, .9);
+  animation: recBlink 1.2s steps(1, end) infinite;
+}
+@keyframes recBlink { 0%, 58% { opacity: 1; } 59%, 100% { opacity: .18; } }
+
+.cctv__title {
+  margin: 0;
+  font-family: ui-monospace, "SFMono-Regular", Consolas, "Courier New", monospace;
+  font-weight: 700; line-height: 1.3;
+  font-size: clamp(.8rem, 3.5vw, 1.02rem);
+  letter-spacing: .06em;
+  color: var(--cream);
+  overflow-wrap: anywhere;                 /* the school name must never overflow 360px */
+}
+
+.cctv__strip {
+  margin: 0; width: 100%; padding: 6px 10px; border-radius: 4px;
+  background: #0b1424; border: 1px solid rgba(57, 255, 20, .2);
+  font-family: ui-monospace, "SFMono-Regular", Consolas, "Courier New", monospace;
+  font-size: clamp(.6rem, 2.6vw, .7rem); letter-spacing: .04em; line-height: 1.4;
+  color: var(--cream-dim);
+  overflow-wrap: anywhere;                  /* never let the strip overflow 360px */
+}
+.cctv__flag { color: var(--neon); }
+
+/* ===== The monitor ===== */
+.lab__main {
+  flex: 1 1 auto;
+  display: flex; flex-direction: column; justify-content: center;
+  gap: clamp(10px, 3vw, 14px);
+}
+
+.mon {
+  margin: 0; width: 100%;
+  display: flex; flex-direction: column; align-items: center;
+  gap: 9px;
+}
+
+.mon__frame {
+  position: relative;
+  display: grid;                           /* the tap target stretches to the glass */
+  width: 100%;
+  aspect-ratio: 4 / 3;                   /* keeps the layout still while loading */
+  max-height: 56dvh;                      /* stays on screen in landscape */
+  background: #05080f;
+  border: 1px solid rgba(243, 234, 214, .18);
+  border-radius: 8px;
+  overflow: hidden;                       /* clips the scanlines to the glass */
+  box-shadow: inset 0 0 60px rgba(0, 0, 0, .7),
+              0 0 0 1px rgba(0, 0, 0, .6),
+              0 14px 34px rgba(0, 0, 0, .55);
+}
+
+/* Viewfinder corner ticks, drawn as four pairs of 2px gradients. */
+.mon__frame::before {
+  content: ""; position: absolute; inset: 6px; z-index: 3;
+  pointer-events: none;                    /* decoration must never eat a tap */
+  opacity: .55;
+  background:
+    linear-gradient(var(--neon), var(--neon)) 0 0 / 18px 2px no-repeat,
+    linear-gradient(var(--neon), var(--neon)) 0 0 / 2px 18px no-repeat,
+    linear-gradient(var(--neon), var(--neon)) 100% 0 / 18px 2px no-repeat,
+    linear-gradient(var(--neon), var(--neon)) 100% 0 / 2px 18px no-repeat,
+    linear-gradient(var(--neon), var(--neon)) 0 100% / 18px 2px no-repeat,
+    linear-gradient(var(--neon), var(--neon)) 0 100% / 2px 18px no-repeat,
+    linear-gradient(var(--neon), var(--neon)) 100% 100% / 18px 2px no-repeat,
+    linear-gradient(var(--neon), var(--neon)) 100% 100% / 2px 18px no-repeat;
+}
+
+/* ---- Scanlines + a slow sweep. pointer-events:none, so taps pass through. ---- */
+.mon__scan {
+  position: absolute; inset: 0; z-index: 2;
+  pointer-events: none;
+  background: repeating-linear-gradient(180deg,
+    rgba(0, 0, 0, .3) 0 1px, rgba(0, 0, 0, 0) 1px 3px);
+}
+.mon__scan::after {
+  content: ""; position: absolute; left: 0; right: 0; height: 38%;
+  background: linear-gradient(180deg,
+    rgba(57, 255, 20, 0), rgba(57, 255, 20, .08) 50%, rgba(57, 255, 20, 0));
+  animation: sweep 5.5s linear infinite;
+}
+@keyframes sweep { 0% { transform: translateY(-130%); } 100% { transform: translateY(330%); } }
+
+/* ---- The tap target (only unhidden once the still has loaded) ---- */
+.mon__btn {
+  position: relative;
+  display: block; width: 100%; height: 100%;
+  padding: 0; border: 0; background: transparent;
+  cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+  transition: filter .1s ease;
+}
+.mon__btn[hidden] { display: none; }       /* beats the display:block above */
+.mon__btn:active { filter: brightness(.9); }
+.mon__btn:focus-visible { outline: 3px solid var(--neon); outline-offset: -5px; }
+
+/* contain, never cover: the still is evidence, so nothing is cropped away.
+   Absolute inset, so it fills the frame without depending on a percentage
+   height resolving against an aspect-ratio-derived box. */
+.mon__img {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: contain;
+}
+
+/* ---- Dashed placeholder, shown until the still loads (or if it fails) ---- */
+.mon__ph {
+  position: absolute; inset: 12px; z-index: 1;
+  margin: 0; display: grid; place-items: center; text-align: center;
+  padding: 18px;
+  pointer-events: none;                    /* purely informational */
+  border: 2px dashed rgba(243, 234, 214, .3); border-radius: 6px;
+  font-family: ui-monospace, "SFMono-Regular", Consolas, "Courier New", monospace;
+  font-size: .74rem; line-height: 1.5; color: var(--cream-dim);
+  overflow-wrap: anywhere;
+}
+.mon__ph[hidden] { display: none; }
+
+.mon__cap {
+  margin: 0; text-align: center;
+  font-family: ui-monospace, "SFMono-Regular", Consolas, "Courier New", monospace;
+  font-size: .72rem; letter-spacing: .06em; color: var(--cream-dim);
+}
+
+/* ---- The single evidence line ---- */
+.log {
+  margin: 0; text-align: center;
+  font-family: ui-monospace, "SFMono-Regular", Consolas, "Courier New", monospace;
+  font-size: .72rem; letter-spacing: .08em; color: var(--cream-dim);
+}
+
+/* ===== Enlarged footage: the pinch / drag / double-tap viewer =====
+   .zoom__scroll is the pinch surface. `pinch-zoom` in its touch-action is what
+   lets the browser zoom it natively, so nothing here may set touch-action:none
+   or user-scalable=no — the page's viewport meta must stay zoomable too. */
+.zoom {
+  position: fixed; inset: 0; z-index: 150;   /* over the action bar (20) and hints sheet (120) */
+  background: rgba(4, 7, 14, .97);
+  transition: opacity .2s ease;
+}
+.zoom[hidden] { display: none; }
+.zoom.is-closing { opacity: 0; }
+
+/* ---- The pan/pinch surface: the whole overlay ---- */
+.zoom__scroll {
+  position: absolute; inset: 0; z-index: 0;
+  overflow: auto;                              /* drag to pan */
+  overscroll-behavior: contain;                /* panning must not chain to the page */
+  touch-action: pan-x pan-y pinch-zoom;        /* native pinch; double-tap is ours */
+  -webkit-overflow-scrolling: touch;
+  display: flex;
+}
+/* No scanlines in here: they fight with reading the fine detail on zoom. */
+.zoom__img {
+  display: block;
+  flex: none;
+  margin: auto;                                /* centres when it fits; pins to the start when it doesn't */
+  width: 100%;                                 /* 100%: the whole still on screen */
+  max-width: none;                             /* the 250% step below must not be clamped */
+  height: auto;                                /* always the natural aspect ratio */
+}
+.zoom__scroll.is-wide .zoom__img { width: 250%; }   /* ~2.5x viewport width */
+
+/* ---- "Double-tap to zoom" tip: fades out, then never blocks a tap ---- */
+.zoom__tip {
+  position: absolute; z-index: 2;
+  left: 50%; bottom: calc(16px + var(--safe-bottom));
+  transform: translateX(-50%);
+  margin: 0; padding: 6px 13px; border-radius: 999px;
+  background: rgba(11, 16, 32, .9); border: 1px solid rgba(57, 255, 20, .35);
+  font-family: ui-monospace, "SFMono-Regular", Consolas, "Courier New", monospace;
+  font-size: .72rem; letter-spacing: .08em; color: var(--cream);
+  white-space: nowrap;
+  pointer-events: none;                        /* pure information */
+  transition: opacity .4s ease;
+}
+.zoom__tip.is-gone { opacity: 0; }
+
+.zoom__close {
+  position: absolute; z-index: 3;
+  top: calc(10px + var(--safe-top)); right: calc(10px + var(--safe-right));
+  min-width: 56px; min-height: var(--tap);     /* comfortably over 44px */
+  padding: 0 .95rem;
+  font-family: ui-monospace, "SFMono-Regular", Consolas, "Courier New", monospace;
+  font-size: .78rem; font-weight: 700; letter-spacing: .16em; text-transform: uppercase;
+  color: var(--cream); background: rgba(22, 32, 60, .95);
+  border: 1px solid rgba(243, 234, 214, .35); border-radius: 10px;
+  cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+  transition: transform .1s ease, background-color .1s ease;
+}
+.zoom__close:active { transform: translateY(1px); background: #26345f; }
+.zoom__close:focus-visible { outline: 3px solid var(--neon); outline-offset: 3px; }
+
+/* ===== Buttons (CCTV style; :active only, never :hover) ===== */
+.cam-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 100%; min-height: var(--tap);
+  padding: 0.9rem 1.4rem;
+  font-family: ui-monospace, "SFMono-Regular", Consolas, "Courier New", monospace;
+  font-size: .95rem; font-weight: 700; letter-spacing: .18em; text-transform: uppercase;
+  color: var(--cream); background: #16203c;
+  border: 1px solid rgba(243, 234, 214, .3); border-radius: 6px;
+  cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+  transition: transform .1s ease, background-color .1s ease;
+}
+.cam-btn:active { transform: translateY(1px); background: #22305a; }
+.cam-btn:focus-visible { outline: 3px solid var(--cream); outline-offset: 3px; }
+.cam-btn--solid { color: var(--navy); background: var(--neon); border-color: var(--neon); }
+.cam-btn--solid:active { background: #2fdc10; }
+
+/* ===== Intro overlay ===== */
+.intro {
+  position: fixed; inset: 0; z-index: 200;   /* over the action bar (20), sheet (120) and zoom (150) */
+  display: grid; place-items: center;
+  padding: calc(24px + var(--safe-top)) 20px calc(24px + var(--safe-bottom));
+  background: radial-gradient(120% 90% at 50% 0%, #101a36 0%, #06090f 70%);
+  transition: opacity .35s ease, visibility .35s ease;
+}
+.intro.is-hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+.intro__card {
+  width: min(460px, 100%);
+  display: grid; gap: clamp(18px, 5vw, 26px);
+  justify-items: center; text-align: center;
+}
+.intro__from {
+  margin: 0;
+  font-family: ui-monospace, "SFMono-Regular", Consolas, "Courier New", monospace;
+  font-size: .7rem; letter-spacing: .28em; text-transform: uppercase; color: var(--neon);
+}
+.intro__text {
+  margin: 0; min-height: 5.4em;
+  font-family: ui-monospace, "SFMono-Regular", Consolas, "Courier New", monospace;
+  font-size: clamp(.92rem, 4.2vw, 1.1rem); line-height: 1.5; color: var(--cream);
+  overflow-wrap: anywhere;
+}
+/* The blinking caret, drawn so the script only has to set text. */
+.intro__text.is-typing::after {
+  content: ""; display: inline-block;
+  width: .55ch; height: 1em; margin-left: 2px; vertical-align: -.14em;
+  background: var(--neon);
+  animation: blink 1s steps(1) infinite;
+}
+@keyframes blink { 50% { opacity: 0; } }
+
+.intro .cam-btn { width: auto; min-width: min(240px, 68vw); }
+/* The Begin button only appears once the note has finished typing. */
+.intro:not(.is-ready) .cam-btn { opacity: 0; visibility: hidden; }
+.intro .cam-btn { transition: opacity .3s ease, visibility .3s ease, transform .1s ease, background-color .1s ease; }
+
+/* ===== Reduced motion: keep every state, drop the movement ===== */
+@media (prefers-reduced-motion: reduce) {
+  .cctv__dot { animation: none; }
+  .mon__scan::after { animation: none; }
+  .intro__text.is-typing::after { animation: none; }
+  .mon__btn, .cam-btn, .zoom, .zoom__tip, .zoom__close, .intro, .intro .cam-btn { transition: none; }
+}

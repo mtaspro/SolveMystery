@@ -3,6 +3,9 @@
 // countdown measured from page load, shows a live countdown while locked, and
 // lists unlocked hints (locked ones show their remaining time).
 //
+// Every string comes from /shared/strings.js, and `hints` is a list of KEYS
+// (from /config.js), not text, so the panel re-renders in the current language.
+//
 //   import { initHints } from '/shared/hints.js';
 //   initHints({
 //     hints: CONFIG.stages.s1.hints,
@@ -12,9 +15,13 @@
 //
 // Returns { openSheet, closeSheet, foot, sheet, openCount, stop }.
 
+import { t, tf, onLangChange } from '/shared/i18n.js';
+
 // Read the user's motion preference at call time so it stays live.
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
+// The "0:45" clock on the button. Kept in code because the zero-padding is a
+// format, not a translatable word; the words around it come from strings.js.
 function fmt(sec) {
   return Math.floor(sec / 60) + ':' + String(sec % 60).padStart(2, '0');
 }
@@ -33,9 +40,10 @@ export function initHints({ hints = [], times = [45, 90, 150], onAllUnlocked } =
   const btn = document.createElement('button');
   btn.type = 'button';
   btn.className = 'btn btn--ghost';
-  const count = document.createElement('span');
+  const label = document.createElement('span');   // its own node, so a language
+  const count = document.createElement('span');    // change can retarget it
   count.className = 'actbar__count';
-  btn.append('Stuck?', count);
+  btn.append(label, count);
   bar.appendChild(btn);
 
   const sheet = document.createElement('div');
@@ -51,11 +59,9 @@ export function initHints({ hints = [], times = [45, 90, 150], onAllUnlocked } =
   head.className = 'sheet__head';
   const title = document.createElement('h2');
   title.className = 'sheet__title';
-  title.textContent = 'Assistance';
   const close = document.createElement('button');
   close.type = 'button';
   close.className = 'sheet__close';
-  close.setAttribute('aria-label', 'Close hints');
   close.textContent = '\u2715';
   head.append(title, close);
 
@@ -68,15 +74,25 @@ export function initHints({ hints = [], times = [45, 90, 150], onAllUnlocked } =
   sheet.appendChild(panel);
   document.body.append(bar, sheet);
 
+  // Every piece of copy that is not inside the hint list itself.
+  function paintStrings() {
+    label.textContent = t('hints.button');
+    title.textContent = t('hints.title');
+    sheet.setAttribute('aria-label', t('hints.title'));
+    close.setAttribute('aria-label', t('hints.close'));
+  }
+
   // ----- sheet -----
   function openSheet() {
     const elapsed = (Date.now() - loadedAt) / 1000;
     ol.innerHTML = '';
-    list.forEach((text, i) => {
+    list.forEach((key, i) => {
       const li = document.createElement('li');
       const unlocked = i < open;
       li.className = unlocked ? 'hints__item' : 'hints__locked';
-      li.textContent = unlocked ? text : 'Locked — ' + Math.ceil(times[i] - elapsed) + 's';
+      li.textContent = unlocked
+        ? t(key)                                       // a missing key shows itself
+        : tf('hints.locked', { n: Math.ceil(times[i] - elapsed) });
       ol.appendChild(li);
     });
     sheet.hidden = false;
@@ -98,7 +114,7 @@ export function initHints({ hints = [], times = [45, 90, 150], onAllUnlocked } =
     while (n < times.length && elapsed >= times[n]) n++;
     open = n;
     if (n >= times.length) {
-      count.textContent = n + ' hints';
+      count.textContent = tf('hints.allOut', { n });
       count.classList.add('is-ready');
       if (!allDone) {                          // fire once, as the last hint lands
         allDone = true;
@@ -115,6 +131,14 @@ export function initHints({ hints = [], times = [45, 90, 150], onAllUnlocked } =
   sheet.addEventListener('click', (e) => { if (e.target === sheet) closeSheet(); }); // tap scrim
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeSheet(); });
 
+  // A language change repaints the bar and, if it is up, the open list.
+  const offLang = onLangChange(() => {
+    paintStrings();
+    tick();
+    if (!sheet.hidden) openSheet();
+  });
+
+  paintStrings();
   tick();
   const timer = setInterval(tick, 1000);
 
@@ -124,6 +148,6 @@ export function initHints({ hints = [], times = [45, 90, 150], onAllUnlocked } =
     foot,
     sheet,
     get openCount() { return open; },
-    stop: () => clearInterval(timer),
+    stop: () => { clearInterval(timer); offLang(); }
   };
 }
