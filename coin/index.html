@@ -4,92 +4,22 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#0b1020">
-  <title>Canteen — Order Display</title>
-  <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20100%20100'%3E%3Ctext%20y='.9em'%20font-size='90'%3E%F0%9F%94%8E%3C/text%3E%3C/svg%3E">
+  <!-- TEMPORARY PLACEHOLDER: exists only so the /coin/ flow can be tested.
+       Do not index, and do not build stage 4 on top of this file. -->
+  <meta name="robots" content="noindex, nofollow">
+  <title>Canteen — Coming Soon</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20100%20100'%3E%3Ctext%20y='.9em'%20font-size='90'%3E%F0%9F%94%AD%3C/text%3E%3C/svg%3E">
   <link rel="stylesheet" href="/shared/style.css">
-  <link rel="stylesheet" href="/coin/style.css">
-  <link rel="stylesheet" href="/shared/hints.css">
+  <style>
+    .soon { max-width: 32ch; }
+    .soon .lede { margin-top: .2em; }
+  </style>
 </head>
 <body>
-  <div class="canteen" id="canteen">
-
-    <!-- ===== Header: school name + "Now serving" status strip ===== -->
-    <header class="canteen__head">
-      <p class="canteen__title" id="pageTitle">Greenfield School - Canteen - Order Display</p>
-      <p class="canteen__status" id="status" aria-live="polite" aria-atomic="true">Now serving: 03:07 - Announcement pending</p>
-    </header>
-
-    <main class="canteen__main">
-
-      <!-- ===== Speaker ===== -->
-      <div class="speaker-wrap">
-        <!-- A real <audio> with preload=metadata and NO native controls lives at
-             the bottom of the page; this button is the play/pause trigger. -->
-        <button class="speaker" id="speakerBtn" type="button"
-                aria-labelledby="speakerLabel">
-          <span class="speaker__icon" aria-hidden="true">
-            <svg class="speaker__svg" viewBox="0 0 48 48" aria-hidden="true" focusable="false">
-              <path class="speaker__wave" d="M30 15.5a7.5 7.5 0 0 1 0 17"
-                    fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
-              <path class="speaker__wave" d="M34 12a11 11 0 0 1 0 24"
-                    fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
-              <polygon class="speaker__cone" points="12,9 26,24 12,39" fill="currentColor"/>
-            </svg>
-          </span>
-        </button>
-
-        <!-- Dynamic label (updates to "Play again" after a full play) -->
-        <p class="speaker__label" id="speakerLabel">Tap to hear today's announcement</p>
-
-        <!-- Animated equalizer, only visible while playing -->
-        <div class="equalizer" id="equalizer" aria-hidden="true">
-          <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
-        </div>
-
-        <!-- Thin progress bar -->
-        <div class="progress-row">
-          <div class="progress" id="progress">
-            <div class="progress__fill" id="progressFill"></div>
-          </div>
-          <span class="time" id="timeLabel">0:00 / 0:00</span>
-        </div>
-      </div>
-
-      <!-- Playback speed toggle (0.75x) -->
-      <button class="cbtn cbtn--slow" id="slowBtn" type="button">Slow</button>
-
-      <!-- Transcript toggle -->
-      <button class="cbtn cbtn--ghost" id="transcriptBtn" type="button">
-        <span id="transcriptBtnLabel">Show transcript</span>
-      </button>
-    </main>
-
-    <!-- Audio error message (built at runtime, shown on failure) -->
-    <p class="canteen__error" id="errorMsg" role="alert" hidden>Audio unavailable. Show the transcript below.</p>
-
-    <!-- Transcript (revealed on error; content added in a later stage) -->
-    <div id="transcript" class="transcript" hidden>
-      <h2 class="transcript__title">Transcript</h2>
-      <div class="transcript__body"></div>
-    </div>
-
-    <!-- ===== Intro overlay ===== -->
-    <div class="overlay" id="intro" role="dialog" aria-modal="true" aria-labelledby="introFrom">
-      <div class="overlay__card">
-        <p class="overlay__from" id="introFrom">The Examiner</p>
-        <p class="overlay__text" id="introText" aria-hidden="true">
-          <span id="typed"></span><span class="caret"></span>
-        </p>
-        <p class="sr-only">Hungry? Too bad. The canteen has one announcement today. Listen carefully.</p>
-        <button class="cbtn" id="beginBtn" type="button">Begin</button>
-      </div>
-    </div>
-
-    <!-- Real <audio>, kept off-screen but preloaded for metadata. The src is set
-         in script.js from PA_AUDIO_URL so the URL is never part of the page copy. -->
-    <audio id="pa" preload="metadata" playsinline class="pa-offscreen"></audio>
-
-    <script type="module" src="/coin/script.js"></script>
-  </div>
+  <main class="screen">
+    <p class="eyebrow">Stage 4</p>
+    <h1 class="title">Can<span class="accent">teen</span></h1>
+    <p class="lede soon">Coming soon. The till is unplugged and the tea has run out.</p>
+  </main>
 </body>
 </html>

@@ -127,18 +127,7 @@ const en = {
   'lab.enlargedTip': 'Footage enlarged. Drag to pan, pinch to zoom, double-tap to toggle.',
   'lab.enlargeAria': 'Enlarge the Camera 02 still',
   'lab.zoomAria': 'Enlarged footage',
-  'lab.zoomTip': 'Double-tap to zoom',
-
-  // ---- stage 4: the canteen ----
-  'canteen.header': 'Canteen - Order Display',
-  'canteen.statusPending': 'Now serving: 03:07 - Announcement pending',
-  'canteen.statusPlayed': 'Now serving: 03:07 - Announcement played',
-  'canteen.intro': 'Hungry? Too bad. The canteen has one announcement today. Listen carefully.',
-  'canteen.speakerLabel': "Tap to hear today's announcement",
-  'canteen.speakerLabelReplay': 'Play again',
-  'canteen.slow': 'Slow',
-  'canteen.error': 'Audio unavailable. Show the transcript below.',
-  'canteen.transcriptTitle': 'Transcript'
+  'lab.zoomTip': 'Double-tap to zoom'
 };
 
 export const STRINGS = {
