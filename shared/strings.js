@@ -127,7 +127,44 @@ const en = {
   'lab.enlargedTip': 'Footage enlarged. Drag to pan, pinch to zoom, double-tap to toggle.',
   'lab.enlargeAria': 'Enlarge the Camera 02 still',
   'lab.zoomAria': 'Enlarged footage',
-  'lab.zoomTip': 'Double-tap to zoom'
+  'lab.zoomTip': 'Double-tap to zoom',
+
+  // ---- stage 4: the canteen ----
+  'canteen.header': 'Canteen - Order Display',
+  'canteen.statusPending': 'Now serving: 03:07 - Announcement pending',
+  'canteen.statusPlayed': 'Now serving: 03:07 - Announcement played',
+  'canteen.intro': 'Hungry? Too bad. The canteen has one announcement today. Listen carefully.',
+  'canteen.speakerLabel': "Tap to hear today's announcement",
+  'canteen.speakerLabelReplay': 'Play again',
+  'canteen.slow': 'Slow',
+  'canteen.error': 'Audio unavailable. Show the transcript below.',
+  'canteen.transcriptTitle': 'Transcript',
+  'canteen.transcript.1': 'Attention, all candidates. Attention.',
+  'canteen.transcript.2': 'The canteen will close early today.',
+  'canteen.transcript.3': 'A message from the Examiner.',
+  'canteen.transcript.4': 'Whose tomb am I? Ask the encyclopedia. The Great Pyramid of Giza.',
+  'canteen.transcript.5': 'I repeat: the Great Pyramid of Giza.',
+  'canteen.transcript.6': 'That is all.',
+  'canteen.showTranscript': 'Show transcript',
+  'canteen.wikipediaButton': 'Open Wikipedia',
+
+  // ---- stage 5: removed page (410) ----
+  'removed.code': '410 - PAGE REMOVED',
+  'removed.message': 'This page has been deleted by the administrator.',
+  'removed.lastSeen': 'Last seen: a few days ago',
+  'removed.waybackButton': 'Open Wayback Machine',
+
+  // ---- hints (stage 4) ----
+  'hints.s4.1': 'Listen to the whole announcement. Tap the transcript if you can\'t hear it.',
+  'hints.s4.2': 'The encyclopedia is Wikipedia. Look up the Great Pyramid of Giza.',
+  'hints.s4.3': 'Read the first paragraph: whose tomb was it built for? That name is the next address. ' +
+    'Type it right after the site name.',
+
+  // ---- hints (stage 5) ----
+  'hints.s5.1': 'Pages that vanish are sometimes remembered by the internet.',
+  'hints.s5.2': 'Search for the internet\'s time machine. It is run by archive.org and called the Wayback Machine.',
+  'hints.s5.3': 'Look up this page\'s old address (/khufu) in the Wayback Machine and read the saved copy. ' +
+    'What it says is the next address.'
 };
 
 export const STRINGS = {
