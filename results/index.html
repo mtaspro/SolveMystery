@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0b1020">
+  <title>The Vanishing Results — Results</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20100%20100'%3E%3Ctext%20y='.9em'%20font-size='90'%3E%F0%9F%94%AD%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/shared/style.css">
+  <link rel="stylesheet" href="/results/style.css">
+</head>
+<body>
+  <main class="screen results" id="results">
+
+    <!-- ===== Locked screen (shown if vault not opened) ===== -->
+    <div class="locked" id="locked">
+      <h1 class="locked__title" data-i18n="results.deniedTitle">ACCESS DENIED</h1>
+      <p class="locked__note" data-i18n="results.deniedNote">The vault must be opened first.</p>
+      <a class="btn" href="/" data-i18n="results.backButton">Back to start</a>
+    </div>
+
+    <!-- ===== Decrypting terminal ===== -->
+    <div class="terminal" id="terminal" hidden>
+      <p class="terminal__line" id="line1" data-i18n="results.line1">Connecting to the portal...</p>
+      <p class="terminal__line" id="line2" data-i18n="results.line2">Bypassing The Examiner...</p>
+      <p class="terminal__line" id="line3" data-i18n="results.line3">Decrypting results...</p>
+      <p class="sr-only" id="progressLabel" data-i18n="results.progressLabel">Progress</p>
+      <div class="progress-row">
+        <div class="progress" id="progress">
+          <div class="progress__fill" id="progressFill"></div>
+        </div>
+        <span class="time" id="progressText">0%</span>
+      </div>
+
+      <button class="btn btn--ghost" id="skipBtn" type="button" data-i18n="landing.skip">Skip</button>
+    </div>
+
+    <!-- ===== Banner + reveal content ===== -->
+    <div class="reveal-content" id="revealContent" hidden>
+      <div class="banner">
+        <h1 class="banner__title" id="bannerTitle" data-i18n="results.banner">PORTAL RESTORED</h1>
+      </div>
+
+      <!-- ===== Mask button ===== -->
+      <button class="btn" id="maskBtn" type="button" data-i18n="results.maskButton">Remove the Examiner's mask</button>
+
+      <!-- ===== Examiner identity (revealed after mask) ===== -->
+      <div class="examiner-card" id="examinerCard" hidden>
+        <p class="examiner__who" id="examinerWho"></p>
+        <p class="examiner__line" id="examinerLine"></p>
+      </div>
+
+      <!-- ===== Friends section ===== -->
+      <div class="friends" id="friends" hidden>
+        <p class="friends__label" data-i18n="results.findYourName">Find your name:</p>
+        <div class="friends__chips" id="friendsChips"></div>
+      </div>
+
+      <!-- ===== Friend result card ===== -->
+      <div class="cert" id="cert" hidden>
+        <div class="cert__card">
+          <p class="cert__eyebrow" id="certEyebrow" data-i18n="results.certEyebrow"></p>
+          <h2 class="cert__name" id="certName"></h2>
+          <p class="cert__grade" id="certGrade"></p>
+          <p class="cert__message" id="certMessage"></p>
+          <p class="cert__group" id="certGroup"></p>
+          <p class="cert__stamp" data-i18n="results.passed" aria-label="PASSED">PASSED</p>
+        </div>
+      </div>
+
+      <!-- ===== Final note ===== -->
+      <div class="final-note" id="finalNote" hidden>
+        <p class="final-note__text" id="finalNoteText"></p>
+        <a class="btn btn--ghost" href="/" data-i18n="results.backButton">Back to start</a>
+      </div>
+    </div>
+
+  </main>
+
+  <script type="module" src="/results/script.js"></script>
+</body>
+</html>

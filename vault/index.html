@@ -4,22 +4,52 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#0b1020">
-  <!-- TEMPORARY PLACEHOLDER: exists so the /vault/ flow can be tested.
-       Do not index. -->
-  <meta name="robots" content="noindex, nofollow">
-  <title>Vault — Coming Soon</title>
+  <title>Vault — Principal's Office</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20100%20100'%3E%3Ctext%20y='.9em'%20font-size='90'%3E%F0%9F%94%AD%3C/text%3E%3C/svg%3E">
   <link rel="stylesheet" href="/shared/style.css">
-  <style>
-    .soon { max-width: 32ch; }
-    .soon .lede { margin-top: .2em; }
-  </style>
+  <link rel="stylesheet" href="/vault/style.css">
+  <link rel="stylesheet" href="/shared/hints.css">
 </head>
 <body>
-  <main class="screen">
-    <p class="eyebrow">Stage 5</p>
-    <h1 class="title">Principal's <span class="accent">Office</span></h1>
-    <p class="lede soon">Coming soon. The vault is still being catalogued.</p>
-  </main>
+  <div class="vault">
+    <!-- ===== Header: school name + shredder status ===== -->
+    <header class="desk__head">
+      <p class="desk__title" id="pageTitle">Greenfield School - Principal's Office</p>
+      <p class="desk__status" id="shredStatus" data-i18n="vault.statusJammed">Shredder status: JAMMED</p>
+    </header>
+
+    <main class="vault__main">
+      <!-- ===== The shredded document ===== -->
+      <div class="paper" id="paper" aria-label="Shredded document">
+        <div class="paper__strips" id="strips"></div>
+        <p class="paper__moves" id="moves" data-i18n="vault.moves">Moves: 0</p>
+      </div>
+
+      <!-- ===== Vault keypad ===== -->
+      <div class="keypad">
+        <label for="vaultInput" class="keypad__label" data-i18n="vault.keypadLabel">Final password</label>
+        <input class="field" id="vaultInput" type="text" inputmode="text"
+               autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false"
+               enterkeyhint="go" placeholder=" " readonly>
+        <p class="keypad__note" id="keypadNote" data-i18n="vault.keypadNote">Reassemble the document first.</p>
+        <p class="keypad__error" id="keypadError" role="alert" hidden data-i18n="vault.denied">Access denied.</p>
+        <button class="btn" id="openBtn" type="button" data-i18n="vault.openButton">Open vault</button>
+      </div>
+    </main>
+  </div>
+
+  <!-- ===== Intro overlay ===== -->
+  <div class="overlay" id="intro" role="dialog" aria-modal="true" aria-labelledby="introFrom">
+    <div class="overlay__card">
+      <p class="overlay__from" id="introFrom" data-i18n="common.from">The Examiner</p>
+      <p class="overlay__text" id="introText" aria-hidden="true">
+        <span id="typed"></span><span class="caret"></span>
+      </p>
+      <p class="sr-only" data-i18n="vault.intro">You found the vault. The paper shredder jammed halfway. Piece it together, candidate.</p>
+      <button class="btn" id="beginBtn" type="button" data-i18n="common.begin">Begin</button>
+    </div>
+  </div>
+
+  <script type="module" src="/vault/script.js"></script>
 </body>
 </html>

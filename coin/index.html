@@ -16,7 +16,7 @@
     <!-- ===== Header: school name + "Now serving" status strip ===== -->
     <header class="canteen__head">
       <p class="canteen__title" id="pageTitle">Greenfield School - Canteen - Order Display</p>
-      <p class="canteen__status" id="status" aria-live="polite" aria-atomic="true">Now serving: 03:07 - Announcement pending</p>
+      <p class="canteen__status" id="status" aria-live="polite" aria-atomic="true" data-i18n="canteen.statusPending">Now serving: 03:07 - Announcement pending</p>
     </header>
 
     <main class="canteen__main">
@@ -76,12 +76,12 @@
     <!-- ===== Intro overlay ===== -->
     <div class="overlay" id="intro" role="dialog" aria-modal="true" aria-labelledby="introFrom">
       <div class="overlay__card">
-        <p class="overlay__from" id="introFrom">The Examiner</p>
+        <p class="overlay__from" id="introFrom" data-i18n="common.from">The Examiner</p>
         <p class="overlay__text" id="introText" aria-hidden="true">
           <span id="typed"></span><span class="caret"></span>
         </p>
-        <p class="sr-only">Hungry? Too bad. The canteen has one announcement today. Listen carefully.</p>
-        <button class="cbtn" id="beginBtn" type="button">Begin</button>
+        <p class="sr-only" data-i18n="canteen.intro">Hungry? Too bad. The canteen has one announcement today. Listen carefully.</p>
+        <button class="cbtn" id="beginBtn" type="button" data-i18n="common.begin">Begin</button>
       </div>
     </div>
 

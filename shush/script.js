@@ -18,7 +18,7 @@ const STAGE = 's3';                   // this page's stage id in CONFIG
 
 // The still from Camera 02. Leave it empty ("") to keep the dashed placeholder
 // box up instead — useful before the artwork is ready.
-const LAB_IMAGE_URL = "https://res.cloudinary.com/dxqtqnfgf/image/upload//f_auto,q_auto/v1791207580/8INTH_xftzls.jpg";
+const LAB_IMAGE_URL = "https://res.cloudinary.com/dxqtqnfgf/image/upload/f_auto,q_auto/v1791207580/8INTH_xftzls.jpg";
 
 // The school that owns the cameras. Used in the header and the page title.
 const SCHOOL_NAME = "Greenfield School";

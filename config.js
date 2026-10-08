@@ -31,6 +31,11 @@ export const CONFIG = {
     // Stage 5 — the deleted page (410 / PAGE REMOVED).
     s5: {
       hints: ['hints.s5.1', 'hints.s5.2', 'hints.s5.3']
+    },
+
+    // Stage 6 — the vault.
+    s6: {
+      hints: ['hints.s6.1', 'hints.s6.2', 'hints.s6.3']
     }
   }
 };

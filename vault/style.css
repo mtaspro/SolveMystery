@@ -1,0 +1,339 @@
+/* vault/style.css — the vault / principal's office.
+   Builds on the tokens in /shared/style.css. Same dark desk theme as the
+   other stages. Mobile-first (360x640 up to 390x84), touch-only, no hover.
+   Honours prefers-reduced-motion. Root-relative paths only. */
+
+:root {
+  --desk-paper: #f3ead6;
+  --desk-paper-dim: #e3d9c3;
+  --desk-ink: #1b2340;
+  --desk-rim: rgba(243, 234, 214, .18);
+  --actbar-space: 84px;
+}
+
+html, body { overflow-x: hidden; }
+
+/* ===== Page shell ===== */
+.vault {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(18px, 5vw, 26px);
+  padding: calc(16px + var(--safe-top))
+           calc(16px + var(--safe-right))
+           calc(16px + var(--safe-bottom) + var(--actbar-space))
+           calc(16px + var(--safe-left));
+  box-sizing: border-box;
+}
+
+/* ===== Desk header ===== */
+.desk__head {
+  width: 100%;
+  text-align: center;
+}
+
+.desk__title {
+  margin: 0;
+  font-family: ui-monospace, "SFMono-Regular", Consolas, "Courier New", monospace;
+  font-size: clamp(1rem, 4vw, 1.15rem);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--cream);
+}
+
+.desk__status {
+  margin: 6px 0 0;
+  font-family: ui-monospace, "SFMono-Regular", Consolas, "Courier New", monospace;
+  font-size: .82rem;
+  letter-spacing: .08em;
+  color: var(--cream-dim);
+}
+
+/* ===== Main ===== */
+.vault__main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(18px, 5vw, 26px);
+  width: 100%;
+}
+
+/* ===== The shredded document ===== */
+.paper {
+  width: 100%;
+  max-width: 360px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.paper__strips {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  width: 100%;
+  max-width: 360px;
+}
+
+/* Each strip is a 6-column slice: 60px wide at 360px total. */
+.paper__strip {
+  flex: 0 0 calc(100% / 6);
+  min-width: 44px;
+  max-width: calc(100% / 6);
+  position: relative;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  transition: transform .15s ease, box-shadow .15s ease, filter .15s ease;
+}
+
+/* Strips never scale or move during interaction beyond the transform below. */
+
+/* Paper cell: monospace grid. Each line is one row. */
+.paper__cell {
+  display: block;
+  font-family: "Courier New", Courier, ui-monospace, monospace;
+  font-size: clamp(10px, 2.6vw, 11px);
+  line-height: 1.15;
+  color: var(--desk-ink);
+  background: var(--desk-paper);
+  text-align: left;
+  white-space: pre;
+  overflow: hidden;
+  text-overflow: clip;
+}
+
+/* 5 lines (padded DOC_LINES). At 11px font + 1.15 line-height => ~12-13px per row. */
+.paper__cell {
+  min-height: calc(1.15em * 5);
+}
+
+/* Full strip: a vertical stack of cells, one per line. */
+.paper__strip-inner {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+}
+
+/* Jagged paper edges: dashed border on top and bottom of each strip. */
+.paper__strip::before,
+.paper__strip::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background-image: repeating-linear-gradient(
+    90deg,
+    transparent,
+    transparent 3px,
+    rgba(27, 35, 64, .3) 3px,
+    rgba(27, 35, 64, .3) 6px
+  );
+  pointer-events: none;
+}
+
+.paper__strip::before { top: 0; }
+.paper__strip::after { bottom: 0; }
+
+/* Subtle paper shadow. */
+.paper__strip {
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, .3));
+}
+
+/* ===== Strip states ===== */
+.paper__strip.is-selected {
+  transform: translateY(-6px) scale(1.04);
+  filter: drop-shadow(0 8px 16px rgba(57, 255, 20, .25));
+  z-index: 5;
+}
+
+/* Swap animation: a quick opacity + scale pulse on every strip. */
+.paper__strips.is-swapping .paper__strip {
+  transition: transform .18s ease, box-shadow .18s ease, filter .18s ease, opacity .18s ease;
+}
+
+.paper__strips.is-swapping .paper__strip {
+  opacity: .4;
+  transform: scale(.96);
+}
+
+.paper__strip.is-locked {
+  cursor: default;
+}
+
+.paper__moves {
+  margin: 0;
+  font-family: ui-monospace, "SFMono-Regular", Consolas, "Courier New", monospace;
+  font-size: .8rem;
+  letter-spacing: .06em;
+  color: var(--cream-dim);
+}
+
+.paper__moves.is-done {
+  color: var(--neon);
+  font-weight: 700;
+  text-shadow: 0 0 8px rgba(57, 255, 20, .4);
+}
+
+/* ===== Keypad ===== */
+.keypad {
+  width: 100%;
+  max-width: 360px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.keypad__label {
+  margin: 0;
+  font-family: ui-monospace, "SFMono-Regular", Consolas, "Courier New", monospace;
+  font-size: .72rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--cream-dim);
+}
+
+.keypad__note {
+  margin: 0;
+  font-family: ui-monospace, "SFMono-Regular", Consolas, "Courier New", monospace;
+  font-size: .8rem;
+  color: #ffd7d7;
+}
+
+.keypad__error {
+  margin: 0;
+  font-family: ui-monospace, "SFMono-Regular", Consolas, "Courier New", monospace;
+  font-size: .8rem;
+  font-weight: 700;
+  color: #ffd7d7;
+  text-align: center;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: rgba(139, 0, 0, .24);
+  border: 1px solid rgba(255, 90, 90, .38);
+  box-shadow: 0 0 12px rgba(255, 90, 90, .24);
+}
+
+/* Shake animation for wrong password (skipped under prefers-reduced-motion) */
+@keyframes shake {
+  0%   { transform: translateX(0); }
+  20%  { transform: translateX(-6px); }
+  40%  { transform: translateX(6px); }
+  60%  { transform: translateX(-6px); }
+  80%  { transform: translateX(6px); }
+  100% { transform: translateX(0); }
+}
+.field.is-shaking {
+  animation: shake .42s ease-in-out;
+}
+.field.is-success {
+  border-color: var(--neon);
+  box-shadow: 0 0 18px var(--neon-soft);
+}
+
+.keypad__msg {
+  margin: 0;
+  font-family: ui-monospace, "SFMono-Regular", Consolas, "Courier New", monospace;
+  font-size: .9rem;
+  letter-spacing: .08em;
+  text-align: center;
+}
+
+.keypad__msg {
+  margin: 0;
+  font-family: ui-monospace, "SFMono-Regular", Consolas, "Courier New", monospace;
+  font-size: .9rem;
+  letter-spacing: .08em;
+  text-align: center;
+}
+
+/* Disabled keypad state */
+.keypad .btn:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+}
+
+.keypad input:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+}
+
+/* ===== Intro overlay (reuses shared .overlay styles from corridor/coin) ===== */
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: grid;
+  place-items: center;
+  padding: calc(24px + var(--safe-top)) 20px calc(24px + var(--safe-bottom));
+  background: radial-gradient(120% 90% at 50% 0%, #101a36 0%, #070b16 70%);
+  transition: opacity .35s ease, visibility .35s ease;
+}
+
+.overlay.is-hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.overlay__card {
+  width: min(460px, 100%);
+  display: grid;
+  gap: clamp(18px, 5vw, 28px);
+  justify-items: center;
+  text-align: center;
+}
+
+.overlay__from {
+  margin: 0;
+  font-size: .8rem;
+  letter-spacing: .32em;
+  text-transform: uppercase;
+  color: var(--neon);
+}
+
+.overlay__text {
+  margin: 0;
+  min-height: 4.6em;
+  font-size: clamp(1.1rem, 5vw, 1.5rem);
+  line-height: 1.4;
+  color: var(--cream);
+}
+
+.caret {
+  display: inline-block;
+  width: .55ch;
+  height: 1em;
+  margin-left: 2px;
+  vertical-align: -.12em;
+  background: var(--neon);
+  animation: blink 1s steps(1) infinite;
+}
+
+@keyframes blink { 50% { opacity: 0; } }
+
+.overlay .btn {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity .25s ease, visibility .25s ease;
+}
+
+.overlay.is-ready .btn {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* ===== Reduced motion ===== */
+@media (prefers-reduced-motion: reduce) {
+  .paper__strip, .overlay, .overlay .btn, .field {
+    transition: none;
+    animation: none;
+  }
+  .caret { animation: none; }
+}

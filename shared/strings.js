@@ -164,7 +164,40 @@ const en = {
   'hints.s5.1': 'Pages that vanish are sometimes remembered by the internet.',
   'hints.s5.2': 'Search for the internet\'s time machine. It is run by archive.org and called the Wayback Machine.',
   'hints.s5.3': 'Look up this page\'s old address (/khufu) in the Wayback Machine and read the saved copy. ' +
-    'What it says is the next address.'
+    'What it says is the next address.',
+
+  // ---- stage 6: the vault ----
+  'vault.intro': 'You found the vault. The paper shredder jammed halfway. Piece it together, candidate.',
+  'vault.deskSubtitle': 'Principal\'s Office',
+  'vault.statusJammed': 'Shredder status: JAMMED',
+  'vault.statusRepaired': 'Shredder status: REPAIRED',
+  'vault.moves': 'Moves: {n}',
+  'vault.keypadNote': 'Reassemble the document first.',
+  'vault.keypadLabel': 'Final password',
+  'vault.openButton': 'Open vault',
+  'vault.denied': 'Access denied.',
+  'vault.opened': 'Vault open.',
+
+  // ---- hints (stage 6) ----
+  'hints.s6.1': 'Tap two strips to swap them. The words must connect across the strips.',
+  'hints.s6.2': 'Find the strip that starts the first sentence, then match the edges line by line.',
+  'hints.s6.3': 'When it reads cleanly, the password is on the paper. Type it into the keypad.',
+
+  // ---- stage 7: results ----
+  'results.banner': 'PORTAL RESTORED',
+  'results.deniedTitle': 'ACCESS DENIED',
+  'results.deniedNote': 'The vault must be opened first.',
+  'results.backButton': 'Back to start',
+  'results.line1': 'Connecting to the portal...',
+  'results.line2': 'Bypassing The Examiner...',
+  'results.line3': 'Decrypting results...',
+  'results.progressLabel': 'Progress',
+  'results.maskButton': 'Remove the Examiner\'s mask',
+  'results.examinerWas': 'The Examiner was... {name}',
+  'results.findYourName': 'Find your name:',
+  'results.passed': 'PASSED',
+  'results.certEyebrow': 'Certificate of Achievement',
+  'results.finalNote': 'Every candidate passed. Screenshot this and send it to the group.'
 };
 
 export const STRINGS = {
