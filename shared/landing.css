@@ -141,6 +141,32 @@
   color: #ff6b6b;
   min-height: 1.2em;
 }
+.codename__public-notice {
+  margin: 4px 0 0;
+  font-size: .72rem;
+  line-height: 1.4;
+  text-align: left;
+  color: var(--cream-dim);
+  opacity: .6;
+}
+
+/* ---- 6. Footer board link ---- */
+.board-link {
+  margin-top: 4px;
+  font-family: ui-monospace, "SFMono-Regular", Consolas, "Courier New", monospace;
+  font-size: .74rem;
+  letter-spacing: .08em;
+  color: var(--cream-dim);
+  text-decoration: underline;
+  text-decoration-color: rgba(57, 255, 20, .3);
+  text-underline-offset: 3px;
+}
+.board-link:focus-visible {
+  color: var(--neon);
+  outline: 2px solid var(--neon);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
 
 /* ---- Reduced motion ---- */
 @media (prefers-reduced-motion: reduce) {

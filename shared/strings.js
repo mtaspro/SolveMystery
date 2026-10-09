@@ -184,7 +184,7 @@ const en = {
   'hints.s6.3': 'When it reads cleanly, the password is on the paper. Type it into the keypad.',
 
   // ---- stage 7: results ----
-  'results.banner': 'PORTAL RESTORED',
+  'results.banner': 'THE SEAL IS BROKEN',
   'results.deniedTitle': 'ACCESS DENIED',
   'results.deniedNote': 'The vault must be opened first.',
   'results.backButton': 'Back to start',
@@ -193,11 +193,12 @@ const en = {
   'results.line3': 'Decrypting results...',
   'results.progressLabel': 'Progress',
   'results.maskButton': 'Remove the Examiner\'s mask',
-  'results.examinerWas': 'The Examiner was... {name}',
-  'results.findYourName': 'Find your name:',
-  'results.passed': 'PASSED',
-  'results.certEyebrow': 'Certificate of Achievement',
-  'results.finalNote': 'Every candidate passed. Screenshot this and send it to the group.',
+  'results.examinerWas': 'Behind the mask: {name}',
+  'results.findYourName': 'Find your name in the court:',
+  'results.passed': 'ROYAL',
+  'results.certEyebrow': 'ROYAL CANDIDATE - SEASON 1',
+  'results.finalNote': 'Season 1 is over. You are no longer candidates. You are the Royal Candidates. But the crown has only one head. Season 2 is being prepared.',
+  'results.signal': 'Signal intercepted: 43 52 4F 57 4E',
 
    // ---- tracking ----
   'track.codenameLabel': 'Choose your codename',
@@ -205,6 +206,8 @@ const en = {
   'track.codenameNote': 'This name appears on the candidate board.',
   'track.taken': 'That codename is taken. Try another.',
   'track.invalid': 'Use 2-16 letters or numbers.',
+  'track.publicNotice': 'Your codename and times appear on a public board.',
+  'track.viewBoard': 'View the candidate board',
 
    // ---- social / visitor log ----
   'social.logButton': 'Visitor log',
@@ -222,7 +225,7 @@ const en = {
   'social.hours': '{n}h',
 
    // ---- candidate board ----
-  'board.header': 'CANDIDATE BOARD',
+  'board.header': 'THE ROYAL COURT',
   'board.subtitle': 'Leaderboards for the investigation',
   'board.tabFastest': 'Fastest',
   'board.tabDedicated': 'Most dedicated',
@@ -240,7 +243,12 @@ const en = {
 
    // ---- results: rank display ----
   'results.rank.message': 'You are candidate #{rank} to recover the results.',
-  'results.rank.boardLink': 'View the candidate board'
+  'results.rank.boardLink': 'View the candidate board',
+
+   // ---- crown (season 2) ----
+  'crown.title': 'SEASON 2 IS SEALED',
+  'crown.subtitle': 'The Royal Candidates will be summoned. Until then, tell no one.',
+  'crown.status': 'Status: \u2588\u2588\u2588\u2588\u2588\u2588\u2591\u2591\u2591\u2591 62%'
 };
 
 export const STRINGS = {

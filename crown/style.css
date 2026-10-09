@@ -1,0 +1,67 @@
+/* crown/style.css — the Season 2 crown page.
+   Builds on the tokens in /shared/style.css. Mobile-first, touch-only.
+   Root-relative paths only. No hints bar, no tracking. */
+
+:root {
+  --actbar-space: 0;
+}
+
+html, body { overflow-x: hidden; }
+
+.crown {
+  justify-content: center;
+  align-items: center;
+  gap: clamp(18px, 6vw, 28px);
+}
+
+.crown__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(14px, 5vw, 20px);
+  max-width: 360px;
+  width: 100%;
+  text-align: center;
+  padding: calc(16px + var(--safe-top)) clamp(16px, 5vw, 28px) calc(16px + var(--safe-bottom)) clamp(16px, 5vw, 28px);
+  box-sizing: border-box;
+}
+
+/* Gold crown emoji, big */
+.crown__glyph {
+  font-size: clamp(4rem, 14vw, 7rem);
+  line-height: 1;
+  filter: drop-shadow(0 0 30px rgba(255, 215, 0, .45))
+          drop-shadow(0 0 50px rgba(255, 215, 0, .25));
+}
+
+.crown__title {
+  margin: 0;
+  font-size: clamp(1.8rem, 9vw, 2.8rem);
+  font-weight: 800;
+  letter-spacing: .04em;
+  color: #ffd700;
+  text-shadow: 0 0 16px rgba(255, 215, 0, .3), 0 0 36px rgba(255, 215, 0, .2);
+}
+
+.crown__subtitle {
+  margin: 0;
+  max-width: 320px;
+  font-size: clamp(0.95rem, 4vw, 1.1rem);
+  line-height: 1.5;
+  color: var(--cream-dim);
+}
+
+.crown__status {
+  margin: 0;
+  font-family: ui-monospace, "SFMono-Regular", Consolas, "Courier New", monospace;
+  font-size: .78rem;
+  letter-spacing: .16em;
+  color: var(--cream-dim);
+  opacity: .7;
+}
+
+/* Reduced motion: keep the gold glow, drop animation intensity */
+@media (prefers-reduced-motion: reduce) {
+  .crown__glyph { filter: none; }
+}

@@ -354,11 +354,21 @@ html, body { overflow-x: hidden; }
   text-align: center;
 }
 
-.final-note__text {
+ .final-note__text {
   margin: 0;
   font-size: clamp(.95rem, 4vw, 1.1rem);
   line-height: 1.5;
   color: var(--cream);
+}
+
+/* ===== Signal line (dim monospace, under the final note) ===== */
+.final-note__signal {
+  margin: 0;
+  font-family: ui-monospace, "SFMono-Regular", Consolas, "Courier New", monospace;
+  font-size: .72rem;
+  letter-spacing: .12em;
+  color: var(--cream-dim);
+  opacity: .5;
 }
 
 /* ===== Reduced motion ===== */

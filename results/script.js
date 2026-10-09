@@ -36,6 +36,7 @@ const certMessage = document.getElementById('certMessage');
 const certGroup = document.getElementById('certGroup');
  const finalNote = document.getElementById('finalNote');
  const finalNoteText = document.getElementById('finalNoteText');
+ const finalNoteSignal = document.getElementById('finalNoteSignal');
  const rankBar = document.getElementById('rankBar');
  const rankText = document.getElementById('rankText');
 
@@ -274,6 +275,10 @@ function showFriendCard(index) {
 
 function showFinalNote() {
   finalNoteText.textContent = RESULTS_DATA.finalNote || t('results.finalNote');
+  if (finalNoteSignal) {
+    finalNoteSignal.textContent = t('results.signal');
+    finalNoteSignal.hidden = false;
+  }
   finalNote.hidden = false;
 }
 
