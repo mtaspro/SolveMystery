@@ -3,12 +3,14 @@
 // so the game keeps working even if the API is down or blocked.
 //
 //   import { getPlayer, joinGame, startTracking, trackHint } from '/shared/track.js';
+//   import { getSeal, restoreGame } from '/shared/track.js';
 //
 // Player identity is stored in localStorage under "vr_player" as
 // JSON { playerId, alias }. localStorage may throw (private mode, etc.),
 // so every access is guarded and an in-memory fallback is used.
 
 const STORAGE_KEY = 'vr_player';
+const SEAL_KEY = 'vr_seal';
 
 let memoryPlayer = null;
 
@@ -96,10 +98,60 @@ export async function joinGame(alias) {
   const data = await resp.json();
   const player = { playerId: data.playerId, alias: data.alias || trimmed };
   writeStored(player);
+
+  // Store the seal in its own key (also on the player object for convenience).
+  if (data.seal) {
+    try { window.localStorage.setItem(SEAL_KEY, data.seal); } catch { /* ignore */ }
+  }
   return player;
 }
 
-async function parseJsonSafe(resp) {
+// ---- seal helpers ----
+
+export function getSeal() {
+  try {
+    return window.localStorage.getItem(SEAL_KEY) || null;
+  } catch {
+    return null;
+  }
+}
+
+export function clearSeal() {
+  try { window.localStorage.removeItem(SEAL_KEY); } catch { /* ignore */ }
+}
+
+// Restore a player from their codename + Royal Seal.
+export async function restoreGame(alias, seal) {
+  if (!alias || !seal || typeof alias !== 'string' || typeof seal !== 'string') {
+    throw new Error('invalid');
+  }
+
+  let resp;
+  try {
+    resp = await fetch('/api/restore', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ alias, seal }),
+      keepalive: true,
+    });
+  } catch {
+    throw new Error('offline');
+  }
+
+  if (!resp.ok) {
+    const err = await parseJsonSafe(resp);
+    if (resp.status === 404 && err && err.error === 'not_found') {
+      throw new Error('not_found');
+    }
+    if (resp.status === 429) throw new Error('rate_limited');
+    throw new Error('api error');
+  }
+
+  const data = await resp.json();
+  const player = { playerId: data.playerId, alias: data.alias || alias };
+  writeStored(player);
+  return player;
+}
   try {
     return await resp.json();
   } catch {

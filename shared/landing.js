@@ -6,7 +6,7 @@
 
 import { t, applyI18n, mountLangToggle, onLangChange } from '/shared/i18n.js';
 import { typewriter } from '/shared/ui.js';
-import { getPlayer, joinGame, validateAlias } from '/shared/track.js';
+import { getPlayer, joinGame, validateAlias, restoreGame, clearSeal } from '/shared/track.js';
 
 const CHAR_MS = 50; // ~163 characters => the message lands in about 8 seconds
 
@@ -16,6 +16,12 @@ const skipBtn = document.getElementById('skipBtn');
 const codenameInput = document.getElementById('codenameInput');
 const codenameError = document.getElementById('codenameError');
 const beginBtn = document.getElementById('beginBtn');
+const restoreLink = document.getElementById('restoreLink');
+const restoreForm = document.getElementById('restoreForm');
+const restoreAlias = document.getElementById('restoreAlias');
+const restoreSeal = document.getElementById('restoreSeal');
+const restoreBtn = document.getElementById('restoreBtn');
+const restoreError = document.getElementById('restoreError');
 
 let typing = null;
 
@@ -110,6 +116,44 @@ async function beginInvestigation() {
 beginBtn.addEventListener('click', (e) => {
   e.preventDefault();
   beginInvestigation();
+});
+
+// ---- restore form ----
+restoreLink.addEventListener('click', () => {
+  restoreForm.hidden = false;
+  restoreAlias.focus();
+});
+
+restoreBtn.addEventListener('click', async () => {
+  const alias = restoreAlias.value.trim();
+  const seal = restoreSeal.value.trim();
+  if (!alias || !seal) {
+    restoreError.textContent = t('track.restore.notFound');
+    restoreError.hidden = false;
+    return;
+  }
+
+  restoreError.hidden = true;
+  restoreBtn.disabled = true;
+
+  try {
+    await restoreGame(alias, seal);
+    window.location.href = '/corridor/';
+  } catch (err) {
+    const msg = err?.message;
+    if (msg === 'offline') {
+      // API unreachable: still let the player try to continue.
+      window.location.href = '/corridor/';
+    } else if (msg === 'rate_limited') {
+      restoreError.textContent = t('track.restore.notFound');
+      restoreError.hidden = false;
+      restoreBtn.disabled = false;
+    } else {
+      restoreError.textContent = t('track.restore.notFound');
+      restoreError.hidden = false;
+      restoreBtn.disabled = false;
+    }
+  }
 });
 
 applyI18n();

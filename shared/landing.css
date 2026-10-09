@@ -168,6 +168,57 @@
   border-radius: 4px;
 }
 
+/* ---- 6b. Returning candidate link ---- */
+.restore-link {
+  margin-top: 8px;
+  font-family: ui-monospace, "SFMono-Regular", Consolas, "Courier New", monospace;
+  font-size: .74rem;
+  letter-spacing: .06em;
+  color: var(--cream-dim);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  -webkit-tap-highlight-color: transparent;
+}
+.restore-link:focus-visible { color: var(--neon); }
+
+/* ---- 6c. Restore form ---- */
+.restore-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: min(340px, 100%);
+  margin-top: 8px;
+}
+.restore__input {
+  width: 100%;
+  padding: 10px 12px;
+  font-family: ui-monospace, "SFMono-Regular", Consolas, "Courier New", monospace;
+  font-size: .9rem;
+  font-weight: 600;
+  letter-spacing: .08em;
+  color: var(--navy);
+  background: var(--neon);
+  border: 2px solid var(--neon);
+  border-radius: 12px;
+  outline: none;
+}
+.restore__input::placeholder { color: var(--navy); opacity: .6; }
+.restore__input:focus { box-shadow: 0 0 16px rgba(57, 255, 20, .35); }
+.restore__row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.restore__error {
+  margin: 0;
+  font-size: .72rem;
+  font-weight: 600;
+  color: #ff6b6b;
+}
+
 /* ---- Reduced motion ---- */
 @media (prefers-reduced-motion: reduce) {
   .codename__input:focus { box-shadow: 0 0 6px rgba(57, 255, 20, .2); }

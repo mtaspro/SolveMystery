@@ -47,6 +47,14 @@
          <a class="btn btn--ghost btn--small" href="/board/" data-i18n="results.rank.boardLink">View the candidate board</a>
        </div>
 
+       <!-- ===== Royal Seal card (shown after banner if seal exists) ===== -->
+       <div class="seal-card" id="sealCard" hidden>
+         <h2 class="seal-card__title" data-i18n="results.seal.title">Your Royal Seal</h2>
+         <div class="seal-card__code" id="sealCode"></div>
+         <button class="btn btn--ghost btn--small" id="sealCopyBtn" type="button" data-i18n="results.seal.copyBtn">Copy</button>
+         <p class="seal-card__note" data-i18n="results.seal.note">Screenshot this. You need it to continue in Season 2.</p>
+       </div>
+
        <!-- ===== Mask button ===== -->
       <button class="btn" id="maskBtn" type="button" data-i18n="results.maskButton">Remove the Examiner's mask</button>
 

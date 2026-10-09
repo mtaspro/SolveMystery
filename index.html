@@ -51,6 +51,21 @@
       <!-- 5. Into the first door -->
       <a class="btn" href="/corridor/" id="beginBtn" data-i18n="landing.begin">Begin Investigation</a>
 
+      <!-- 5b. Returning candidate link -->
+      <button type="button" class="restore-link" id="restoreLink" data-i18n="track.restore.link">Returning candidate? Use your Royal Seal</button>
+
+      <!-- 5c. Restore form (hidden until link is tapped) -->
+      <div class="restore-form" id="restoreForm" hidden>
+        <input class="restore__input" id="restoreAlias" type="text" maxlength="16" autocomplete="off"
+               placeholder="Codename" data-i18n="track.restore.aliasLabel">
+        <input class="restore__input" id="restoreSeal" type="text" maxlength="9" autocomplete="off"
+               placeholder="XXXX-XXXX" data-i18n="track.restore.sealLabel">
+        <div class="restore__row">
+          <button class="btn btn--ghost btn--small" id="restoreBtn" type="button" data-i18n="track.restore.submit">Restore</button>
+          <p class="restore__error" id="restoreError" role="alert" hidden></p>
+        </div>
+      </div>
+
       <!-- 5. Footer tip -->
       <p class="tip" data-i18n="landing.tip">Tip: answers are always lowercase, no spaces.</p>
 

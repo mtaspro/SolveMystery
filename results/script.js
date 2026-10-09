@@ -7,7 +7,7 @@
 import { t, tf, applyI18n, mountLangToggle, onLangChange } from '/shared/i18n.js';
 import { typewriter } from '/shared/ui.js';
 import { RESULTS_DATA } from '/results/data.js';
-import { startTracking, getPlayer } from '/shared/track.js';
+import { startTracking, getPlayer, getSeal } from '/shared/track.js';
 
 // ---- DOM refs ----
 const locked = document.getElementById('locked');
@@ -39,6 +39,9 @@ const certGroup = document.getElementById('certGroup');
  const finalNoteSignal = document.getElementById('finalNoteSignal');
  const rankBar = document.getElementById('rankBar');
  const rankText = document.getElementById('rankText');
+ const sealCard = document.getElementById('sealCard');
+ const sealCode = document.getElementById('sealCode');
+ const sealCopyBtn = document.getElementById('sealCopyBtn');
 
  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
@@ -162,11 +165,54 @@ function finishTerminal() {
 
   startTracking('results');
   loadRank();
+  showSeal();
 
   if (!prefersReducedMotion.matches) {
     createConfetti();
   }
 }
+
+// ---- seal card ----
+function showSeal() {
+  if (!sealCard || !sealCode) return;
+  const seal = getSeal();
+  if (seal) {
+    sealCode.textContent = seal;
+    sealCard.hidden = false;
+  } else {
+    sealCard.hidden = true;
+  }
+}
+
+sealCopyBtn.addEventListener('click', async () => {
+  const seal = sealCode.textContent;
+  if (!seal) return;
+  try {
+    await navigator.clipboard.writeText(seal);
+    sealCopyBtn.textContent = t('results.seal.copied');
+    setTimeout(() => {
+      sealCopyBtn.textContent = t('results.seal.copyBtn');
+    }, 2000);
+  } catch {
+    // Fallback: try the older execCommand approach.
+    const ta = document.createElement('textarea');
+    ta.value = seal;
+    ta.style.cssText = 'position:fixed;left:-9999px;';
+    document.body.appendChild(ta);
+    ta.select();
+    try {
+      document.execCommand('copy');
+      sealCopyBtn.textContent = t('results.seal.copied');
+      setTimeout(() => {
+        sealCopyBtn.textContent = t('results.seal.copyBtn');
+      }, 2000);
+    } catch {
+      // Last resort: show the code in an alert.
+      alert(seal);
+    }
+    document.body.removeChild(ta);
+  }
+});
 
 function loadRank() {
   if (!rankBar) return;

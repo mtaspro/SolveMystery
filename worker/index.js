@@ -7,6 +7,11 @@ const PAGE_SET = new Set(PAGE_ORDER);
 const MAX_BODY_BYTES = 2048;
 const MAX_ADDSEC = 30;
 const MIN_PING_INTERVAL_SEC = 8;
+const SEAL_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // no 0/O/I/1 for readability
+const RESTORE_LIMIT_PER_MIN = 10;
+
+// In-memory rate limit for /restore: { aliasLower: timestamp[] }
+const restoreAttempts = new Map();
 
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), {
@@ -24,6 +29,30 @@ function nowIso() {
 
 function nowEpochSec() {
   return Math.floor(Date.now() / 1000);
+}
+
+// ---- Royal Seal helpers ----
+// 8 random characters from SEAL_ALPHABET, formatted as "XXXX-XXXX".
+async function generateSeal() {
+  const bytes = new Uint8Array(8);
+  crypto.getRandomValues(bytes);
+  let s = '';
+  for (let i = 0; i < 8; i++) {
+    s += SEAL_ALPHABET[bytes[i] % SEAL_ALPHABET.length];
+  }
+  return s.slice(0, 4) + '-' + s.slice(4);
+}
+
+async function hashSeal(seal) {
+  const normalized = normalizeSeal(seal);
+  const data = new TextEncoder().encode(normalized);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+
+function normalizeSeal(seal) {
+  return seal.toUpperCase().replace(/[ -]/g, '');
 }
 
 async function parseBody(request) {
@@ -83,11 +112,45 @@ export default {
 
         const playerId = crypto.randomUUID();
         const ts = nowIso();
-        await env.DB.prepare(
-          'INSERT INTO players (player_id, alias, created_at) VALUES (?, ?, ?)'
-        ).bind(playerId, alias, ts).run();
+        const seal = await generateSeal();
+        const sealHash = await hashSeal(seal);
 
-        return json({ playerId, alias });
+        await env.DB.prepare(
+          'INSERT INTO players (player_id, alias, seal_hash, created_at) VALUES (?, ?, ?, ?)'
+        ).bind(playerId, alias, sealHash, ts).run();
+
+        // The plain seal is returned ONLY here; the stored value is its hash.
+        return json({ playerId, alias, seal });
+      }
+
+      if (method === 'POST' && route === '/restore') {
+        const body = await parseBody(request);
+        const { alias, seal } = body || {};
+
+        const normAlias = validateAlias(alias);
+        if (!normAlias) return json({ error: 'invalid alias' }, 400);
+        if (!seal || typeof seal !== 'string') return json({ error: 'invalid seal' }, 400);
+
+        const now = nowEpochSec();
+        const key = normAlias.toLowerCase();
+        const times = restoreAttempts.get(key) || [];
+        const recent = times.filter((t) => (now - t) < 60);
+        if (recent.length >= RESTORE_LIMIT_PER_MIN) {
+          return json({ error: 'too many attempts' }, 429);
+        }
+        recent.push(now);
+        restoreAttempts.set(key, recent);
+
+        const sealHash = await hashSeal(seal);
+        const player = await env.DB.prepare(
+          'SELECT player_id, alias FROM players WHERE LOWER(alias) = LOWER(?) AND seal_hash = ?'
+        ).bind(normAlias, sealHash).first();
+
+        if (!player) {
+          return json({ error: 'not_found' }, 404);
+        }
+
+        return json({ playerId: player.player_id, alias: player.alias });
       }
 
       if (method === 'POST' && route === '/ping') {

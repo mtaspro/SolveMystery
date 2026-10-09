@@ -245,6 +245,20 @@ const en = {
   'results.rank.message': 'You are candidate #{rank} to recover the results.',
   'results.rank.boardLink': 'View the candidate board',
 
+   // ---- results: royal seal ----
+  'results.seal.title': 'Your Royal Seal',
+  'results.seal.copyBtn': 'Copy',
+  'results.seal.copied': 'Copied!',
+  'results.seal.note': 'Screenshot this. You need it to continue in Season 2.',
+
+   // ---- track: restore form ----
+  'track.restore.link': 'Returning candidate? Use your Royal Seal',
+  'track.restore.aliasLabel': 'Codename',
+  'track.restore.sealLabel': 'Royal Seal',
+  'track.restore.submit': 'Restore',
+  'track.restore.notFound': 'Seal not found for that name. Check both and try again.',
+  'track.restore.offline': 'The board is unreachable right now. You can still continue.',
+
    // ---- crown (season 2) ----
   'crown.title': 'SEASON 2 IS SEALED',
   'crown.subtitle': 'The Royal Candidates will be summoned. Until then, tell no one.',
