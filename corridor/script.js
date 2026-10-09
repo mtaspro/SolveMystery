@@ -13,6 +13,8 @@ import { CONFIG } from '/config.js';
 import { initHints } from '/shared/hints.js';
 import { t, applyI18n, mountLangToggle, onLangChange } from '/shared/i18n.js';
 import { typewriter } from '/shared/ui.js';
+import { startTracking } from '/shared/track.js';
+import { initSocial } from '/shared/social.js';
 
 const STAGE = 's1';                // this page's stage id in CONFIG
 const HINTS = CONFIG.stages[STAGE].hints;
@@ -198,6 +200,7 @@ revealBtn.addEventListener('click', () => {
 
 hintsApi = initHints({
   hints: HINTS,
+  page: 'corridor',
   onAllUnlocked: ({ foot }) => foot.appendChild(revealWrap),
 });
 
@@ -224,3 +227,5 @@ applyI18n();
 mountLangToggle();
 paint();
 startIntro();
+startTracking('corridor');
+initSocial('corridor');

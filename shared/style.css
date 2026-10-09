@@ -98,6 +98,7 @@ body {
 .btn:active { transform: translateY(1px) scale(0.99); }        /* works on touch */
 .btn:focus-visible { outline: 3px solid var(--cream); outline-offset: 3px; }
 .btn--ghost { background: transparent; color: var(--neon); }
+.btn--small { padding: 0.55rem 1rem; font-size: .85rem; }
 
 /* Hover is pure polish for pointer devices; nothing depends on it. */
 @media (hover: hover) and (pointer: fine) {

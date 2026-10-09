@@ -197,7 +197,50 @@ const en = {
   'results.findYourName': 'Find your name:',
   'results.passed': 'PASSED',
   'results.certEyebrow': 'Certificate of Achievement',
-  'results.finalNote': 'Every candidate passed. Screenshot this and send it to the group.'
+  'results.finalNote': 'Every candidate passed. Screenshot this and send it to the group.',
+
+   // ---- tracking ----
+  'track.codenameLabel': 'Choose your codename',
+  'track.codenamePlaceholder': '2-16 letters, numbers, spaces, _ or -',
+  'track.codenameNote': 'This name appears on the candidate board.',
+  'track.taken': 'That codename is taken. Try another.',
+  'track.invalid': 'Use 2-16 letters or numbers.',
+
+   // ---- social / visitor log ----
+  'social.logButton': 'Visitor log',
+  'social.logTitle': 'Visitor Log',
+  'social.close': 'Close log',
+  'social.reached': '{n} candidates reached this door.',
+  'social.firstBlood': 'First blood: {alias}',
+  'social.fastest': 'Fastest crack: {time}',
+  'social.visitor': '{alias} \u2022 {time}',
+  'social.noFirst': 'No first arrival yet.',
+  'social.noFastest': '\u2014',
+  'social.unavailable': 'The log is unavailable.',
+  'social.tickerEntered': '{alias} entered /{page} {time} ago',
+  'social.minutes': '{n}m',
+  'social.hours': '{n}h',
+
+   // ---- candidate board ----
+  'board.header': 'CANDIDATE BOARD',
+  'board.subtitle': 'Leaderboards for the investigation',
+  'board.tabFastest': 'Fastest',
+  'board.tabDedicated': 'Most dedicated',
+  'board.refresh': 'Refresh',
+  'board.hintNote': 'Each hint adds 60 seconds.',
+  'board.noData': 'No candidates yet.',
+  'board.rank': 'Rank',
+  'board.candidate': 'Candidate',
+  'board.hints': 'Hints',
+  'board.total': 'Total',
+  'board.score': 'Score',
+  'board.firstBlood': 'First blood: {pages}',
+  'board.unreached': '-',
+  'board.meBadge': 'You',
+
+   // ---- results: rank display ----
+  'results.rank.message': 'You are candidate #{rank} to recover the results.',
+  'results.rank.boardLink': 'View the candidate board'
 };
 
 export const STRINGS = {

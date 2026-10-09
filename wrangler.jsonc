@@ -1,7 +1,17 @@
 {
-    "name": "solvemystery",
-    "compatibility_date": "2026-10-01",
-    "assets": {
-      "directory": "."
+  "name": "solvemystery",
+  "main": "worker/index.js",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": ".",
+    "binding": "ASSETS",
+    "run_worker_first": ["/api/*"]
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "vr-contest",
+      "database_id": "16e2d894-aa17-4939-be81-f1ba5119543f"
     }
-  }
+  ]
+}

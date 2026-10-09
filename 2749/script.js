@@ -9,6 +9,8 @@ import { CONFIG } from '/config.js';
 import { initHints } from '/shared/hints.js';
 import { t, tf, applyI18n, mountLangToggle, onLangChange } from '/shared/i18n.js';
 import { typewriter } from '/shared/ui.js';
+import { startTracking } from '/shared/track.js';
+import { initSocial } from '/shared/social.js';
 
 const STAGE = 's2';                 // this page's stage id in CONFIG
 
@@ -210,7 +212,7 @@ beginBtn.addEventListener('click', dismissIntro);
 // --- shared hint system (fixed "Stuck?" bar + bottom sheet) ---
 // Hints are advisory only: no answer, no checking. On stage 2 there is nothing
 // to reveal beyond the text, so the onAllUnlocked slot stays empty.
-initHints({ hints: CONFIG.stages[STAGE].hints });
+initHints({ hints: CONFIG.stages[STAGE].hints, page: '2749' });
 
 // --- language change: re-render dynamic text without a reload ---
 onLangChange(() => {
@@ -248,3 +250,5 @@ applyI18n();
 mountLangToggle();
 renderShelf();
 startIntro();
+startTracking('2749');
+initSocial('2749');

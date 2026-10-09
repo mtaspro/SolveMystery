@@ -7,6 +7,7 @@
 import { t, tf, applyI18n, mountLangToggle, onLangChange } from '/shared/i18n.js';
 import { typewriter } from '/shared/ui.js';
 import { RESULTS_DATA } from '/results/data.js';
+import { startTracking, getPlayer } from '/shared/track.js';
 
 // ---- DOM refs ----
 const locked = document.getElementById('locked');
@@ -33,10 +34,12 @@ const certName = document.getElementById('certName');
 const certGrade = document.getElementById('certGrade');
 const certMessage = document.getElementById('certMessage');
 const certGroup = document.getElementById('certGroup');
-const finalNote = document.getElementById('finalNote');
-const finalNoteText = document.getElementById('finalNoteText');
+ const finalNote = document.getElementById('finalNote');
+ const finalNoteText = document.getElementById('finalNoteText');
+ const rankBar = document.getElementById('rankBar');
+ const rankText = document.getElementById('rankText');
 
-const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+ const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
 // State
 let maskRemoved = false;
@@ -156,9 +159,39 @@ function finishTerminal() {
   revealContent.hidden = false;
   bannerTitle.classList.add('is-glow');
 
+  startTracking('results');
+  loadRank();
+
   if (!prefersReducedMotion.matches) {
     createConfetti();
   }
+}
+
+function loadRank() {
+  if (!rankBar) return;
+  const player = getPlayer();
+  if (!player) {
+    rankBar.hidden = true;
+    return;
+  }
+  // Fetch the player's rank from the API.
+  fetch('/api/me?playerId=' + encodeURIComponent(player.playerId))
+    .then(async (resp) => {
+      if (!resp.ok) throw new Error('http_' + resp.status);
+      return resp.json();
+    })
+    .then((data) => {
+      if (data && data.rank != null && data.rank > 0) {
+        rankText.textContent = tf('results.rank.message', { n: data.rank });
+        rankBar.hidden = false;
+      } else {
+        rankBar.hidden = true;
+      }
+    })
+    .catch(() => {
+      // API unreachable: hide the rank bar silently.
+      rankBar.hidden = true;
+    });
 }
 
 // ---- skip ----

@@ -65,3 +65,46 @@
   .sheet, .sheet__panel { transition:none; }
   .sheet__panel { transform:none; }
 }
+
+/* ---- Visitor log button (sits next to "Stuck?" in the actbar) ---- */
+.actbar .social__btn { flex:0 1 auto; padding:.9rem 1.4rem; font-size:1rem; }
+
+/* ---- Visitor log sheet (reuses .sheet / .sheet__panel from hints.css) ---- */
+.social__panel {
+  max-width: 520px;
+  padding-bottom: calc(16px + var(--safe-bottom));
+}
+.social__content { padding: 10px 0 4px; }
+.social__summary { margin:0 0 8px; font-size:.95rem; line-height:1.4; color:var(--cream-dim); }
+.social__first { margin:0 0 4px; font-size:.88rem; color:var(--cream); }
+.social__fastest { margin:0 0 12px; font-size:.88rem; color:var(--cream-dim); }
+.social__list {
+  list-style:none; margin:0; padding:0; display:grid; gap:8px;
+}
+.social__row {
+  padding:8px 10px; border-radius:10px; background:rgba(243,234,214,.04);
+  font-size:.85rem; color:var(--cream-dim); text-align:left; word-break:break-word;
+}
+
+/* ---- Ticker ---- */
+.ticker {
+  position:fixed; left:0; right:0; top:calc(48px + var(--safe-top));
+  z-index:10;
+  overflow:hidden;
+  background:linear-gradient(90deg, rgba(11,16,32,.9), rgba(11,16,32,.75), transparent);
+  border-bottom:1px solid rgba(243,234,214,.1);
+  padding:6px calc(12px + var(--safe-right)) 6px calc(12px + var(--safe-left));
+  font-family:ui-monospace, "SFMono-Regular", Consolas, "Courier New", monospace;
+  font-size:.74rem;
+  letter-spacing:.05em;
+  color:var(--cream-dim);
+  white-space:nowrap;
+  overflow-x:auto;
+  -webkit-overflow-scrolling:touch;
+}
+.ticker[hidden] { display:none; }
+
+/* ---- Reduced motion ---- */
+@media (prefers-reduced-motion: reduce) {
+  .ticker { background:rgba(11,16,32,.8); }
+}

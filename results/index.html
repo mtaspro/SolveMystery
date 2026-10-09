@@ -35,13 +35,19 @@
       <button class="btn btn--ghost" id="skipBtn" type="button" data-i18n="landing.skip">Skip</button>
     </div>
 
-    <!-- ===== Banner + reveal content ===== -->
-    <div class="reveal-content" id="revealContent" hidden>
-      <div class="banner">
-        <h1 class="banner__title" id="bannerTitle" data-i18n="results.banner">PORTAL RESTORED</h1>
-      </div>
+      <!-- ===== Banner + reveal content ===== -->
+     <div class="reveal-content" id="revealContent" hidden>
+       <div class="banner">
+         <h1 class="banner__title" id="bannerTitle" data-i18n="results.banner">PORTAL RESTORED</h1>
+       </div>
 
-      <!-- ===== Mask button ===== -->
+       <!-- ===== Rank / board link (shown after banner) ===== -->
+       <div class="rank-bar" id="rankBar" hidden>
+         <p class="rank-bar__text" id="rankText"></p>
+         <a class="btn btn--ghost btn--small" href="/board/" data-i18n="results.rank.boardLink">View the candidate board</a>
+       </div>
+
+       <!-- ===== Mask button ===== -->
       <button class="btn" id="maskBtn" type="button" data-i18n="results.maskButton">Remove the Examiner's mask</button>
 
       <!-- ===== Examiner identity (revealed after mask) ===== -->

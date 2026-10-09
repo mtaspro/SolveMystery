@@ -16,6 +16,7 @@
 // Returns { openSheet, closeSheet, foot, sheet, openCount, stop }.
 
 import { t, tf, onLangChange } from '/shared/i18n.js';
+import { trackHint } from '/shared/track.js';
 
 // Read the user's motion preference at call time so it stays live.
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -26,13 +27,14 @@ function fmt(sec) {
   return Math.floor(sec / 60) + ':' + String(sec % 60).padStart(2, '0');
 }
 
-export function initHints({ hints = [], times = [45, 90, 150], onAllUnlocked } = {}) {
+export function initHints({ hints = [], times = [45, 90, 150], page = null, onAllUnlocked } = {}) {
   const list = Array.isArray(hints) ? hints : [];
   if (!list.length) return null;               // nothing to offer: render nothing
 
   const loadedAt = Date.now();
   let open = 0;      // how many hints have unlocked
   let allDone = false;
+  const revealed = new Set();  // indices of hints already revealed this session;
 
   // ----- markup: fixed action bar + bottom sheet -----
   const bar = document.createElement('div');
@@ -108,11 +110,22 @@ export function initHints({ hints = [], times = [45, 90, 150], onAllUnlocked } =
   }
 
   // ----- countdown, measured from page load -----
-  function tick() {
+   function tick() {
     const elapsed = (Date.now() - loadedAt) / 1000;
     let n = 0;
     while (n < times.length && elapsed >= times[n]) n++;
     open = n;
+
+    // Track newly revealed hints (once per hint).
+    if (page) {
+      for (let i = 0; i < n; i++) {
+        if (!revealed.has(i)) {
+          revealed.add(i);
+          trackHint(page);
+        }
+      }
+    }
+
     if (n >= times.length) {
       count.textContent = tf('hints.allOut', { n });
       count.classList.add('is-ready');

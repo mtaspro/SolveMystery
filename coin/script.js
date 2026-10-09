@@ -7,6 +7,8 @@ import { CONFIG } from '/config.js';
 import { initHints } from '/shared/hints.js';
 import { t, applyI18n, mountLangToggle, onLangChange } from '/shared/i18n.js';
 import { typewriter, prefersReducedMotion } from '/shared/ui.js';
+import { startTracking } from '/shared/track.js';
+import { initSocial } from '/shared/social.js';
 
 // ---- editable constants (never translated) ----
 const PA_AUDIO_URL = "https://res.cloudinary.com/dxqtqnfgf/video/upload/v1791217408/canteenpa_xv0afk.mp3";
@@ -239,6 +241,7 @@ wikiBtn.addEventListener('click', () => {
 
 const hintsApi = initHints({
   hints: CONFIG.stages.s4.hints,
+  page: 'coin',
   onAllUnlocked: ({ foot }) => foot.appendChild(wikiWrap),
 });
 
@@ -265,3 +268,5 @@ renderText();
 applyI18n();
 mountLangToggle();
 startIntro();
+startTracking('coin');
+initSocial('coin');

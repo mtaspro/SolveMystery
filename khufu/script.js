@@ -8,6 +8,8 @@
 import { CONFIG } from '/config.js';
 import { initHints } from '/shared/hints.js';
 import { t, applyI18n, mountLangToggle, onLangChange } from '/shared/i18n.js';
+import { startTracking } from '/shared/track.js';
+import { initSocial } from '/shared/social.js';
 
 // ---- editable constant (never translated) ----
 const WAYBACK_URL = "https://web.archive.org/web/20261006142646/https://solvemystery.mowama36.workers.dev/khufu/";
@@ -44,6 +46,7 @@ waybackBtn.addEventListener('click', () => {
 
 const hintsApi = initHints({
   hints: CONFIG.stages.s5.hints,
+  page: 'khufu',
   onAllUnlocked: ({ foot }) => foot.appendChild(waybackWrap),
 });
 
@@ -65,3 +68,5 @@ i18nText(lastSeen, 'removed.lastSeen');
 i18nText(waybackBtn, 'removed.waybackButton');
 mountLangToggle();
 scene.focus({ preventScroll: true });
+startTracking('khufu');
+initSocial('khufu');

@@ -7,6 +7,8 @@ import { CONFIG } from '/config.js';
 import { initHints } from '/shared/hints.js';
 import { t, tf, applyI18n, mountLangToggle, onLangChange } from '/shared/i18n.js';
 import { typewriter } from '/shared/ui.js';
+import { startTracking } from '/shared/track.js';
+import { initSocial } from '/shared/social.js';
 
 // ---- editable constants (never translated) ----
 const SCHOOL_NAME = "Greenfield School";
@@ -326,7 +328,8 @@ onLangChange(() => {
 
 // ---- hints ----
 initHints({
-  hints: CONFIG.stages.s6.hints
+  hints: CONFIG.stages.s6.hints,
+  page: 'vault',
 });
 
 // ---- go ----
@@ -346,6 +349,8 @@ function init() {
   applyI18n();
   mountLangToggle();
   startIntro();
+  startTracking('vault');
+initSocial('vault');
 }
 
 init();

@@ -9,6 +9,8 @@ import { CONFIG } from '/config.js';
 import { initHints } from '/shared/hints.js';
 import { t, applyI18n, mountLangToggle, onLangChange } from '/shared/i18n.js';
 import { typewriter } from '/shared/ui.js';
+import { startTracking } from '/shared/track.js';
+import { initSocial } from '/shared/social.js';
 
 const STAGE = 's3';                   // this page's stage id in CONFIG
 
@@ -266,7 +268,7 @@ introText.addEventListener('click', () => { if (typing) typing.finish(); });   /
 // --- shared hint system (fixed "Stuck?" bar + bottom sheet) ---
 // Hints are advisory only: no answer, no checking. On this stage there is
 // nothing extra to reveal once they are all out, so onAllUnlocked is left empty.
-initHints({ hints: CONFIG.stages[STAGE].hints });
+initHints({ hints: CONFIG.stages[STAGE].hints, page: 'shush' });
 
 // --- language change: re-render dynamic text without a reload ---
 onLangChange(() => {
@@ -287,3 +289,5 @@ onLangChange(() => {
 applyI18n();
 mountLangToggle();
 startIntro();
+startTracking('shush');
+initSocial('shush');

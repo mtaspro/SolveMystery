@@ -1,0 +1,194 @@
+/* board/style.css — the candidate board page.
+   Builds on the tokens in /shared/style.css. Mobile-first, touch-only,
+   honours prefers-reduced-motion. Root-relative paths only. */
+
+:root {
+  --actbar-space: 0;
+}
+
+/* ---- Layout ---- */
+.board {
+  gap: clamp(12px, 4vw, 18px);
+}
+
+.board__header {
+  width: 100%;
+  text-align: center;
+}
+
+.board__title {
+  margin: 0;
+  font-size: clamp(1.8rem, 9vw, 2.6rem);
+  font-weight: 800;
+  letter-spacing: .04em;
+  color: var(--neon);
+  text-shadow: 0 0 12px rgba(57, 255, 20, .25);
+}
+
+.board__subtitle {
+  margin: 4px 0;
+  font-size: clamp(.85rem, 3.5vw, 1rem);
+  line-height: 1.4;
+  color: var(--cream-dim);
+}
+
+/* ---- Tabs ---- */
+.board__tabs {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  max-width: 360px;
+  margin: 0 auto;
+}
+
+.board__tab {
+  flex: 1 1 auto;
+  min-height: 44px;
+  font-size: .95rem;
+}
+
+.board__tab.is-active {
+  background: var(--neon);
+  color: var(--navy);
+  box-shadow: 0 0 16px rgba(57, 255, 20, .3);
+}
+
+/* ---- Toolbar ---- */
+.board__toolbar {
+  width: 100%;
+  max-width: 360px;
+  margin: 0 auto;
+}
+
+.board__refresh {
+  min-height: 44px;
+  font-size: .9rem;
+}
+
+/* ---- Hint note ---- */
+.board__hint {
+  margin: 0;
+  font-family: ui-monospace, "SFMono-Regular", Consolas, "Courier New", monospace;
+  font-size: .76rem;
+  letter-spacing: .06em;
+  color: var(--cream-dim);
+  text-align: center;
+}
+
+/* ---- Table ---- */
+.board__table-wrap {
+  width: 100%;
+  max-width: 360px;
+  margin: 0 auto;
+  overflow-x: auto;
+  overflow-y: visible;
+  -webkit-overflow-scrolling: touch;
+  border: 1px solid rgba(243, 234, 214, .1);
+  border-radius: 12px;
+}
+
+.board__table {
+  border-collapse: collapse;
+  width: 100%;
+  min-width: 480px;
+  font-size: .82rem;
+  font-family: ui-monospace, "SFMono-Regular", Consolas, "Courier New", monospace;
+  table-layout: fixed;
+}
+
+.board__table th,
+.board__table td {
+  padding: 8px 10px;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Sticky first column (rank + candidate) */
+.board__table th:first-child,
+.board__table td:first-child {
+  position: sticky;
+  left: 0;
+  width: 80px;
+  background: #101836;
+  backdrop-filter: blur(2px);
+  z-index: 2;
+}
+
+.board__table th {
+  font-size: .7rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--cream-dim);
+  border-bottom: 1px solid rgba(243, 234, 214, .12);
+  white-space: nowrap;
+}
+
+.board__table td {
+  color: var(--cream-dim);
+  border-bottom: 1px solid rgba(243, 234, 214, .05);
+}
+
+/* Candidate column (second) */
+.board__table td:nth-child(2),
+.board__table th:nth-child(2) {
+  width: 120px;
+  text-align: left;
+  font-size: .85rem;
+  color: var(--cream);
+}
+
+/* Score column (in Fastest tab) */
+.board__table td.board__score {
+  color: var(--neon);
+  font-weight: 700;
+}
+
+/* Me badge */
+.board__me {
+  background: rgba(57, 255, 20, .15);
+  box-shadow: 0 0 0 2px var(--neon);
+}
+
+.board__me-badge {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 2px 8px;
+  font-size: .64rem;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--navy);
+  background: var(--neon);
+  border-radius: 6px;
+}
+
+.board__first-blood {
+  display: block;
+  font-size: .64rem;
+  color: var(--cream-dim);
+  font-weight: 500;
+}
+
+/* Empty state */
+.board__empty {
+  text-align: center;
+  padding: 24px 12px;
+  font-size: .9rem;
+  color: var(--cream-dim);
+}
+
+/* Status line */
+.board__status {
+  margin: 0;
+  font-family: ui-monospace, "SFMono-Regular", Consolas, "Courier New", monospace;
+  font-size: .74rem;
+  color: var(--cream-dim);
+  text-align: center;
+}
+
+/* ---- Reduced motion ---- */
+@media (prefers-reduced-motion: reduce) {
+  .board__table { transition: none; }
+}
