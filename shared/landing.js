@@ -158,4 +158,8 @@ restoreBtn.addEventListener('click', async () => {
 
 applyI18n();
 mountLangToggle();
+console.log('[DEBUG landing] typeof typed:', typeof typed, 'typed:', typed);
+console.log('[DEBUG landing] typeof text:', typeof text, 'text:', text);
+console.log('[DEBUG landing] t(landing.message):', typeof t('landing.message'), JSON.stringify(t('landing.message')?.substring(0, 30)));
+console.log('[DEBUG landing] t(common.from):', JSON.stringify(t('common.from')));
 startTyping();

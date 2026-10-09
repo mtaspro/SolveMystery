@@ -64,11 +64,14 @@ function finishIntro() {
 }
 
 function startIntro() {
+  console.log('[DEBUG corridor] startIntro called, t(corridor.intro):', JSON.stringify(t('corridor.intro')?.substring(0, 30)), 'typeof typed:', typeof typed, 'typed:', typed);
   introDone = false;
   typed.textContent = '';
   const text = t('corridor.intro');
+  console.log('[DEBUG corridor] text value:', JSON.stringify(text));
   failsafe = setTimeout(finishIntro, 6000);
   typing = typewriter(typed, text, 45, { onDone: finishIntro });
+  console.log('[DEBUG corridor] typing result:', typing);
   return typing;
 }
 

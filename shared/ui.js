@@ -49,7 +49,9 @@ export function typewriter(el, text, speed = 45, options = {}) {
     onDone = null
   } = options;
 
+console.log('[DEBUG typewriter] el:', el, 'typeof text:', typeof text, 'text length:', text?.length, 'reducedMotion:', reducedMotion);
   const graphemes = splitGraphemes(text);
+  console.log('[DEBUG typewriter] graphemes:', graphemes, 'length:', graphemes.length);
   let shown = 0;
   let timer = 0;
   let settle = null;
@@ -57,6 +59,7 @@ export function typewriter(el, text, speed = 45, options = {}) {
   const done = new Promise((resolve) => { settle = resolve; });
 
   function write(count) {
+    console.log('[DEBUG typewriter] write called:', count, 'textContent:', el.textContent);
     el.textContent = graphemes.slice(0, count).join('');
     if (onChar && count > 0) onChar(graphemes[count - 1], count);
   }
@@ -76,10 +79,12 @@ export function typewriter(el, text, speed = 45, options = {}) {
   }
 
   if (reducedMotion) {
+    console.log('[DEBUG typewriter] reducedMotion=true, writing all at once');
     write(graphemes.length);
     settle(text);
     if (onDone) onDone();
   } else {
+    console.log('[DEBUG typewriter] reducedMotion=false, starting interval');
     write(0);
     timer = setInterval(() => {
       shown += 1;
