@@ -227,5 +227,5 @@ applyI18n();
 mountLangToggle();
 paint();
 startIntro();
-startTracking('corridor');
-initSocial('corridor');
+//startTracking('corridor');
+//initSocial('corridor');
