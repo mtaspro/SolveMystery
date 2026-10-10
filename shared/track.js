@@ -152,6 +152,8 @@ export async function restoreGame(alias, seal) {
   writeStored(player);
   return player;
 }
+
+async function parseJsonSafe(resp) {
   try {
     return await resp.json();
   } catch {
